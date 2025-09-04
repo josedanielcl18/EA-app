@@ -1,0 +1,63 @@
+/* Add any specific styles for this page here if needed */
+.game-results-card {
+    background-color: #343a40; /* Darker background like the prediction sections */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #f8f9fa; /* Light text color */
+}
+.prediction-entry {
+    background-color: #495057;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.prediction-entry strong {
+    color: #ffffff;
+}
+.prediction-entry .score {
+    font-weight: bold;
+    color: #28a745; /* Green for points */
+}
+.prediction-entry .score.points-3 { color: #28a745; } /* Exact */
+.prediction-entry .score.points-1 { color: #ffc107; } /* Correct outcome */
+.prediction-entry .score.points-0 { color: #dc3545; } /* Incorrect */
+
+.game-header {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #66ccff; /* Light blue for game names */
+}
+.game-info {
+    font-size: 0.9em;
+    color: #adb5bd;
+    margin-bottom: 15px;
+}
+.game-status {
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 3px;
+    color: white;
+    margin-left: 10px;
+}
+.game-status.upcoming { background-color: #007bff; }
+.game-status.finished { background-color: #6c757d; }
+.game-status.live { background-color: #dc3545; }
+.actual-result {
+    font-weight: bold;
+    color: #ffffff;
+    margin-top: 10px;
+    font-size: 1.1em;
+}
+
+/* CSS for score tiers */
+.prediction-entry .score.points-perfect { color: #28a745; } /* e.g., 10 points */
+.prediction-entry .score.points-high { color: #17a2b8; }  /* e.g., 5-9 points */
+.prediction-entry .score.points-low { color: #ffc107; }   /* e.g., 1-4 points */
+.prediction-entry .score.points-none { color: #dc3545; }  /* e.g., 0 points */
+.prediction-entry .score.points-na { color: #adb5bd; }    /* N/A */

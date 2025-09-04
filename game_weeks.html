@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Weeks Overview - EA Predictor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles2.css">
+</head>
+<body class="bg-dark text-white">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">EA Predictor</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Predictions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tabla.html">All Results & Predictions</a>
+                </li>
+                 <li class="nav-item active">
+                    <a class="nav-link" href="game_weeks.html">Game Weeks <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h1 class="text-center mb-5">Game Weeks Overview</h1>
+
+        <div id="game-weeks-container">
+            <p class="text-center text-muted">Loading game week data...</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Your Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLfJ01cou9x4dBIirKbb016a69phKXOPc",
+            authDomain: "ea-football-predictor.firebaseapp.com",
+            projectId: "ea-football-predictor",
+            storageBucket: "ea-football-predictor.firebasestorage.app",
+            messagingSenderId: "419246128197",
+            appId: "1:419246128197:web:3082ec10e3e4e81432b72c"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // UI Elements
+        const gameWeeksContainer = document.getElementById('game-weeks-container');
+
+        // --- Scoring Logic (Copied directly from tabla.html to ensure consistency) ---
+        function calculatePoints(prediction, game) {
+            if (game.Status !== 'finished' || game.HomeScore === null || game.AwayScore === null) {
+                return null;
+            }
+
+            const predictedHome = prediction.predictedHomeScore;
+            const predictedAway = prediction.predictedAwayScore;
+            const actualHome = game.HomeScore;
+            const actualAway = game.AwayScore;
+
+            if (predictedHome === null || predictedAway === null) {
+                return 0;
+            }
+
+            let points = 0;
+            const predictedOutcome = predictedHome > predictedAway ? 'HW' : (predictedHome < predictedAway ? 'AW' : 'D');
+            const actualOutcome = actualHome > actualAway ? 'HW' : (actualHome < actualAway ? 'AW' : 'D');
+            const predictedGoalDifference = predictedHome - predictedAway;
+            const actualGoalDifference = actualHome - actualAway;
+
+            if (predictedOutcome === actualOutcome) {
+                points += 5;
+            }
+            if (predictedHome === actualHome) {
+                points += 2;
+            }
+            if (predictedAway === actualAway) {
+                points += 2;
+            }
+            if (Math.abs(predictedGoalDifference) === Math.abs(actualGoalDifference)) {
+                points += 1;
+            }
+            return points;
+        }
+
+        // --- Load Game Week Data Function ---
+        async function loadGameWeekData() {
+            gameWeeksContainer.innerHTML = '<p class="text-center text-muted">Loading game week data...</p>';
+
+            try {
+                // 1. Fetch all games
+                const gamesSnapshot = await getDocs(query(collection(db, 'games'), orderBy('KickOffTime', 'asc')));
+                const games = {};
+                gamesSnapshot.forEach(doc => {
+                    games[doc.id] = { id: doc.id, ...doc.data(), predictions: [] };
+                });
+
+                // 2. Fetch all predictions
+                const predictionsSnapshot = await getDocs(query(collection(db, 'predictions'), orderBy('timestamp', 'desc')));
+                predictionsSnapshot.forEach(doc => {
+                    const prediction = doc.data();
+                    if (games[prediction.gameId]) {
+                        games[prediction.gameId].predictions.push(prediction);
+                    }
+                });
+
+                // 3. Group player stats by Fecha
+                // fechaPlayerStats: { "GW1": { "PlayerA": { points: 15, perfectScores: 1 }, "PlayerB": { points: 10, perfectScores: 0 } }, ... }
+                const fechaPlayerStats = {};
+
+                // Initialize player stats for all players who have made predictions
+                // This ensures all players appear in each Fecha they participate in, even if 0 points
+                predictionsSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const userId = data.userId || `anon_${doc.id}`; // fallback in case userId missing
+                        const playerName = data.playerName || 'Anonymous';
+                        const gameId = data.gameId;
+                        const game = games[gameId];
+                    if (game && game.Fecha) {
+                        if (!fechaPlayerStats[game.Fecha]) {
+                            fechaPlayerStats[game.Fecha] = {};
+                        }
+                        if (!fechaPlayerStats[game.Fecha][userId]) {
+                            fechaPlayerStats[game.Fecha][userId] = { 
+                                points: 0, 
+                                perfectScores: 0, 
+                                playerName: playerName 
+                            };
+                        } else {
+                            // Update latest playerName in case they changed it
+                            fechaPlayerStats[game.Fecha][userId].playerName = playerName;
+                        }
+                    }
+                });
+
+
+                for (const gameId in games) {
+                    const game = games[gameId];
+                    const fecha = game.Fecha;
+
+                    if (!fecha) {
+                        continue; // Skip games without a Fecha for this specific view
+                    }
+
+                    game.predictions.forEach(prediction => {
+                        const userId = prediction.userId || `anon_${prediction.id}`;
+                        const playerName = prediction.playerName || 'Anonymous';
+                        const points = calculatePoints(prediction, game);
+
+                        if (points !== null) {
+                            if (!fechaPlayerStats[fecha][userId]) { // Should be initialized, but safe check
+                                fechaPlayerStats[fecha][userId] = { 
+                                    points: 0, 
+                                    perfectScores: 0,
+                                    playerName: playerName 
+                                 };
+                            }
+                            fechaPlayerStats[fecha][userId].points += points;
+
+                            if (points === 10) {
+                                fechaPlayerStats[fecha][userId].perfectScores += 1;
+                            }
+                            // Keep name updated
+                            fechaPlayerStats[fecha][userId].playerName = playerName;
+                        }
+                    });
+                }
+
+                gameWeeksContainer.innerHTML = ''; // Clear loading message
+
+                if (Object.keys(fechaPlayerStats).length === 0) {
+                    gameWeeksContainer.innerHTML = '<p class="text-center">No game weeks (Fechas) found with scores.</p>';
+                    return;
+                }
+
+                // Sort Fechas (e.g., "GW1", "GW2" numerically if possible, otherwise alphabetically)
+                const sortedFechas = Object.keys(fechaPlayerStats).sort((a, b) => {
+                    const numA = parseInt(a.replace('GW', ''));
+                    const numB = parseInt(b.replace('GW', ''));
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    }
+                    return a.localeCompare(b);
+                });
+
+                // Render each Fecha as a separate section with its leaderboard
+                sortedFechas.forEach(fecha => {
+                    const fechaSection = document.createElement('div');
+                    fechaSection.classList.add('fecha-section', 'game-results-card', 'mb-5');
+
+                    const playersStatsForFecha = fechaPlayerStats[fecha];
+                    // Sort players for this Fecha: by points (desc), then by perfect scores (desc)
+                    const sortedPlayersForFecha = Object.entries(playersStatsForFecha).sort(([, statsA], [, statsB]) => {
+                        if (statsB.points !== statsA.points) {
+                            return statsB.points - statsA.points;
+                        }
+                        return statsB.perfectScores - statsA.perfectScores;
+                    });
+
+                    let fechaLeaderboardHtml = '<p class="text-center text-muted">No scores for this Fecha yet.</p>';
+                    if (sortedPlayersForFecha.length > 0) {
+                        fechaLeaderboardHtml = `
+                            <table class="table table-dark table-striped table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Player</th>
+                                        <th scope="col">Points</th>
+                                        <th scope="col" class="text-center">10s</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${sortedPlayersForFecha.map(([userId, stats], index) => `
+                                        <tr>
+                                            <th scope="row">${index + 1}</th>
+                                            <td><strong>${stats.playerName}</strong></td>
+                                            <td><span class="badge badge-light badge-pill">${stats.points}</span></td>
+                                            <td class="text-center"><span class="badge badge-warning">${stats.perfectScores}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+
+                    fechaSection.innerHTML = `
+                        <h2 class="text-center mb-4">Fecha: ${fecha}</h2>
+                        ${fechaLeaderboardHtml}
+                    `;
+                    gameWeeksContainer.appendChild(fechaSection);
+                });
+
+            } catch (error) {
+                console.error("Error loading game week data: ", error);
+                gameWeeksContainer.innerHTML = '<p class="text-center" style="color: red;">Error loading game week data. Please try again later.</p>';
+            }
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', loadGameWeekData);
+    </script>
+</body>
+</html>

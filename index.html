@@ -1,168 +1,1113 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
-<!-- Head -->
-
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <!-- Tag for Responsive -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Primary Meta Tags -->
-  <title>Eliminatorias Anónimas</title>
-  <meta name="title" content="Eliminatorias Anónimas" />
-  <meta name="description" content="Fútbol, fútbol & fútbol!" />
+    <title>Eliminatorias Anónimas</title>
+    <meta name="title" content="Eliminatorias Anónimas" />
+    <meta name="description" content="Fútbol, fútbol & fútbol!" />
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="" />
-  <meta property="og:title" content="Eliminatorias Anónimas" />
-  <meta property="og:description" content="Fútbol, fútbol & fútbol!" />
-  <!-- <meta property="og:image" itemprop="image"  content="https://live.staticflickr.com/65535/51133249283_6b50006683_t.jpg" /> -->
-  <!-- <meta property="og:updated_time" content="1440432930"> -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:title" content="Eliminatorias Anónimas" />
+    <meta property="og:description" content="Fútbol, fútbol & fútbol!" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 
-  <!-- Bootstrap5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 
-  <!-- Bootstrap Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="./css/icon/favicon-ball.ico" />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="./css/icon/favicon-ball.ico" />
-
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/e32607c50a.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/e32607c50a.js" crossorigin="anonymous"></script>
 
 </head>
 
 
-<!-- Body -->
-
 <body>
+    <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark ">
+        <div class="container d-flex flex-column flex-md-row justify-content-between">
+            <a class="navbar-brand" href="#">EA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark ">
-    <div class="container d-flex flex-column flex-md-row justify-content-between">
-      <a class="navbar-brand" href="#">EA</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExample03">
-        <ul class="navbar-nav me-auto mb-2 mb-sm-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="crearCuenta.html">Crear una cuenta</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#skills">Iniciar sesión</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Background Image -->
-  <section>
-    <div class="m-md-3 text-center bg-light">
-      <img src="css/images/bg-cancha.jpg" class="img-fluid bg-img" alt="background-image">
-    </div>
-  </section>
+            <div class="collapse navbar-collapse" id="navbarsExample03">
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="tabla.html">Tabla</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="game_weeks.html">Game Weeks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#auth-ui">Iniciar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
 
-  <!-- Profile Section -->
-  <section id="profile">
-    <div class="colored-container m-md-3">
+    <section class="hero-image-section py-2">
+        <div class="hero-image-container">
+            <img src="css/images/bg-cancha.jpg" class="img-fluid bg-img" alt="background-image">
+        </div>
+    </section>
 
-      <div class="d-md-flex flex-md-equal w-100 mt-md-0 mb-md-3 ps-md-3">
 
-        <div class="me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center overflow-hidden w-100">
-          <div class="my-3 py-3">
-            <img class="img-profile" src="css/images/EA-logo.png" alt="profile">
-            <h1 class="fw-bold">Eliminatorias Anónimas</h1>
-            <p>-- Torneos de Fútbol --</p>
-          </div>
+    <section id="profile" class="py-2">
+        <div class="colored-container m-md-3">
+
+            <div class="d-md-flex flex-md-equal w-100 mt-md-0 mb-md-3 ps-md-3">
+
+                <div class="me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center overflow-hidden w-100">
+                    <div class="my-3 py-3">
+                        <img class="img-profile" src="css/images/EA-logo.png" alt="profile">
+                        <h1 class="fw-bold">Eliminatorias Anónimas</h1>
+                        <p>-- Torneos de Fútbol --</p>
+                    </div>
+                </div>
+
+                <div class="me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center align-self-center overflow-hidden w-100">
+                    <div class="my-3 py-3">
+                        <h2 class="fw-bold">Muchachos...</h2>
+                        <p class="profile-description">Si van a opinar, que sea faltándose al respeto.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section id="game-prediction-section" class="py-5"> <div class="container"> <div class="app-card prediction-section"> <h2>Submit Your Predictions</h2>
+        <div id="auth-ui" class="mb-4">
+            <div id="login-register-form">
+                <div class="form-group mb-3">
+                    <label for="userEmail">Email:</label>
+                    <input type="email" id="userEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="userPassword">Password:</label>
+                    <input type="password" id="userPassword" class="form-control" placeholder="Enter your password" required>
+                    <div class="text-right mt-1">
+                        <a href="#" id="forgotPasswordLink" class="text-muted small">Forgot Password?</a>
+                    </div>
+                </div>
+                <button id="signInButton" class="btn btn-success me-2">Sign In</button>
+                <button id="signUpButton" class="btn btn-info">Sign Up</button>
+                <p id="auth-message" class="text-danger mt-3" style="font-weight: bold;"></p>
+            </div>
+
+            <div id="user-status-display" style="display: none;">
+                <p>Welcome, <span id="userNameDisplay" style="font-weight: bold;"></span>!</p>
+                <p>You are signed in as: <span id="userEmailDisplay" style="font-weight: bold;"></span></p>
+                <button id="signOutButton" class="btn btn-danger mt-2">Sign Out</button>
+            </div>
+        </div>
+                <div class="form-group">
+                    <label for="playerName">Your Name:</label>
+                    <input type="text" id="playerName" placeholder="Enter your name" required>
+                </div>
+
+                <div id="prediction-form-games" class="game-list">
+                    Loading games for prediction...
+                </div>
+
+                <button id="submitPredictions" class="btn btn-primary-custom" disabled>Submit All Predictions</button>
+                <p id="message" style="color: green; font-weight: bold; margin-top: 15px;"></p>
+            </div>
+
+            <section id="game-prediction-section" class="py-5"> <div class="container"> <hr class="my-5"> 
+                    <h2 class="section-heading">Upcoming & Recent Games</h2> <div id="game-list" class="game-list">
+                        <p class="loading-message">Loading games...</p> </div>
+                </div>
+            </section>
+
+            <hr class="my-5"> 
+            
+            <div id="admin-game-form-section" class="app-card prediction-section" style="display: none;">
+            <h2>Add New Game (Admin)</h2>
+            <div class="form-group mb-3">
+                <label for="adminHomeTeam">Home Team:</label>
+                <select id="adminHomeTeam" class="form-control"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminAwayTeam">Away Team:</label>
+                <select id="adminAwayTeam" class="form-control"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminLeague">League:</label>
+                <select id="adminLeague" class="form-control"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminKickOffTime">Kick-off Time:</label>
+                <input type="datetime-local" id="adminKickOffTime" class="form-control">
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminStatus">Status:</label>
+                <select id="adminStatus" class="form-control">
+                    <option value="upcoming">Upcoming</option>
+                    <option value="finished">Finished</option>
+                    <option value="live">Live</option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminFecha">Fecha (Game Week):</label>
+                <input type="text" id="adminFecha" class="form-control" placeholder="e.g., GW1, GW2">
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminHomeScore">Home Score (optional):</label>
+                <input type="number" id="adminHomeScore" class="form-control" min="0" placeholder="e.g., 2">
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminAwayScore">Away Score (optional):</label>
+                <input type="number" id="adminAwayScore" class="form-control" min="0" placeholder="e.g., 1">
+            </div>
+            <button id="addGameButton" class="btn btn-primary-custom">Add Game</button>
+            <p id="adminMessage" class="mt-3 text-center"></p>
+        </div>
+        
+        <div id="my-predictions-section" class="prediction-section" style="display: none;"> <h2 class="section-heading">My Submitted Predictions</h2>
+            <div id="my-predictions-list" class="game-list">
+                <p class="text-center">No predictions submitted yet.</p>
+            </div>
+        </div>
+        </div> </section> 
+
         </div>
 
-        <div class="me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center align-self-center overflow-hidden w-100">
-          <div class="my-3 py-3">
-            <h2 class="fw-bold">EA...</h2>
-            <p class="profile-description">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</p>
-          </div>
+    </section>
+
+    <section id=description class="py-2">
+
+        <div class="bg-light p-3 p-md-5 mt-md-3 mb-md-0 text-center">
+            <div class="col-md-5 mx-auto my-4">
+                <h2 class='section-heading'>Paso a Paso ⚽</h2>
+            </div>
         </div>
 
-      </div>
+        <div class="d-md-flex flex-md-equal w-100 mt-md-0 mb-md-3 ps-md-3">
 
-    </div>
-  </section>
+            <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
+                <div class="my-3 py-3">
+                    <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
+                    <h3 class='skill-title'>Paso 1</h3>
+                    <p class="description-step"> No money, no code (menos Daguish)
+                </div>
+            </div>
 
-  <!-- Description Section -->
-  <section id=description>
+            <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
+                <div class="my-3 py-3">
+                    <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
+                    <h3 class='skill-title'>Paso 2</h3>
+                    <p class="description-step"> Sube tus predicciones de marcadores
+                </div>
+            </div>
 
-    <div class="bg-light p-3 p-md-5 mt-md-3 mb-md-0 text-center">
-      <div class="col-md-5 mx-auto my-4">
-        <h2 class='section-heading'>En qué consiste? ⚽</h2>
-      </div>
-    </div>
+            <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
+                <div class="my-3 py-3">
+                    <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
+                    <h3 class='skill-title'>Paso 3</h3>
+                    <p class="description-step"> Acosa al ADMIN para que mande tabla
+                </div>
+            </div>
 
-    <div class="d-md-flex flex-md-equal w-100 mt-md-0 mb-md-3 ps-md-3">
-
-      <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
-        <div class="my-3 py-3">
-          <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
-          <h3 class='skill-title'>Paso 1</h3>
-          <ul>
-            <li>■ Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</li>
-          </ul>
         </div>
-      </div>
+    </section>
 
-      <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
-        <div class="my-3 py-3">
-          <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
-          <h3 class='skill-title'>Paso 2</h3>
-          <ul>
-            <li>■ Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</li>
-          </ul>
+    <section class="py-2">
+        <div class="m-md-3 p-5 portfolio-section">
+            <h2 class='section-heading'>Eliminatorias Anónimas</h2>
+            <p>Vik, manda taaaaablaaaaa! 🗣️</p>
+            <a class="btn btn-primary-custom" href="tabla.html">Tabla</a>
         </div>
-      </div>
+    </section>
 
-      <div class="bg-light me-md-0 pt-3 px-3 pt-md-0 px-md-5 text-center text-black overflow-hidden w-100">
-        <div class="my-3 py-3">
-          <img class="img-icon" src="css/images/pelota-de-futbol.svg" alt="data-analytics-icon">
-          <h3 class='skill-title'>Paso 3</h3>
-          <ul>
-            <li>■ Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</li>
-          </ul>
+    <div class="footer-container">
+        <a href="https://chat.whatsapp.com/2cUguIQ8AWhCTkfYLaixfi" target="_blank"><i class="footer-icon fab fa-whatsapp fa-2x"></i></a>
+        <p class='footer-link'>© 2025 José Daniel Cuéllar Lobo.</p>
+    </div>
+
+    <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark text-white"> <div class="modal-header">
+                    <h5 class="modal-title text-white" id="resetModalLabel">Password Reset</h5>
+                    <button type="button" class="close text-white" id="closeHeaderButton" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="resetModalBody">
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeFooterButton">Close</button>
+                </div>
+            </div>
         </div>
-      </div>
-
     </div>
-  </section>
 
 
-  <!-- Contact me Section -->
-  <section>
-    <div class="m-md-3 p-5 portfolio-section">
-      <h2 class='section-heading'>Empieza... </h2>
-      <p>Torenos de fútbol...</p>
-      <a class="btn" href="#">Crea tu cuenta</a>
-    </div>
-  </section>
+    <script type="module">
+        // Import the functions you need from the SDKs you want to use
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, query, orderBy, limit, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        // Import Authentication functions
+        import { getAuth, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"; // ADD THIS LINE
+        
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyDLfJ01cou9x4dBIirKbb016a69phKXOPc",
+        authDomain: "ea-football-predictor.firebaseapp.com",
+        projectId: "ea-football-predictor",
+        storageBucket: "ea-football-predictor.firebasestorage.app",
+        messagingSenderId: "419246128197",
+        appId: "1:419246128197:web:3082ec10e3e4e81432b72c"
+        };
 
-  <!-- Footer -->
-  <div class="footer-container">
-    <a href="#" target="_blank"><i class="footer-icon fab fa-whatsapp fa-2x"></i></a>
-    <a href="#" target="_blank"><i class="footer-icon fab fa-spotify fa-2x"></i></a>
-    <p class='footer-link'>© 2021 José Daniel Cuéllar Lobo.</p>
-  </div>
-  </div>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); // Get a reference to the Firestore database
+        const auth = getAuth(app); // Get a reference to the Firebase Auth service // ADD THIS LINE
+        // New References for My Predictions section
+        const myPredictionsSection = document.getElementById('my-predictions-section');
+        const myPredictionsList = document.getElementById('my-predictions-list');
+
+        let gamesForPrediction = []; // To store games that are upcoming for prediction
+        let currentUserId = null; // To store the authenticated user's ID
+        let currentUserEmail = null; // To store the authenticated user's email
+        let allTeams = [];
+        let allLeagues = [];
+
+        // --- UI Element References ---
+        const playerNameInput = document.getElementById('playerName');
+        const submitPredictionsButton = document.getElementById('submitPredictions');
+        const predictionMessageDiv = document.getElementById('message');
+
+        const userEmailInput = document.getElementById('userEmail');
+        const userPasswordInput = document.getElementById('userPassword');
+        const signInButton = document.getElementById('signInButton');
+        const signUpButton = document.getElementById('signUpButton');
+        const authMessageDiv = document.getElementById('auth-message');
+        const signOutButton = document.getElementById('signOutButton');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink'); 
+        const resetModalBody = document.getElementById('resetModalBody');
+        const resetModalElement = document.getElementById('resetModal'); 
+        
+        const resetModal = new bootstrap.Modal(resetModalElement); 
+        const closeHeaderButton = document.getElementById('closeHeaderButton');
+        const closeFooterButton = document.getElementById('closeFooterButton');
+
+        const loginRegisterFormDiv = document.getElementById('login-register-form');
+        const userStatusDisplayDiv = document.getElementById('user-status-display');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+
+        // New References for Admin Game Form
+        const adminGameFormSection = document.getElementById('admin-game-form-section');
+        const adminHomeTeamSelect = document.getElementById('adminHomeTeam');
+        const adminAwayTeamSelect = document.getElementById('adminAwayTeam');
+        const adminLeagueSelect = document.getElementById('adminLeague');
+        const adminKickOffTimeInput = document.getElementById('adminKickOffTime');
+        const adminStatusSelect = document.getElementById('adminStatus');
+        const adminFechaInput = document.getElementById('adminFecha'); // Add this line
+        const adminHomeScoreInput = document.getElementById('adminHomeScore');
+        const adminAwayScoreInput = document.getElementById('adminAwayScore');
+        const addGameButton = document.getElementById('addGameButton');
+        const adminMessageDiv = document.getElementById('adminMessage');
+
+        // --- Admin Configuration ---
+        const ADMIN_UID = 'NGUEFdFJB8cKZdSU6MHojOSzlkA2'; // <--- REPLACE THIS WITH YOUR ACTUAL UID!
+
+        // --- Functions to toggle UI state ---
+        function setPredictionFormEnabled(enabled) {
+            playerNameInput.disabled = !enabled;
+            submitPredictionsButton.disabled = !enabled;
+            // Also disable/enable prediction score inputs
+            document.querySelectorAll('#prediction-form-games input[type="number"]').forEach(input => {
+                input.disabled = !enabled;
+            });
+        }
+
+        function displayAuthMessage(message, isError = false) {
+            authMessageDiv.textContent = message;
+            authMessageDiv.style.color = isError ? 'red' : 'green';
+        }
+
+        // --- Authentication State Listener ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                currentUserId = user.uid;
+                currentUserEmail = user.email;
+
+                // Update UI for signed-in state
+                loginRegisterFormDiv.style.display = 'none'; // Hide login/register form
+                userStatusDisplayDiv.style.display = 'block'; // Show user status
+                userNameDisplay.textContent = user.email; // Default to email for display name
+                userEmailDisplay.textContent = user.email;
+                signOutButton.style.display = 'inline-block';
+
+                // Enable prediction form and pre-fill player name
+                setPredictionFormEnabled(true);
+                playerNameInput.value = user.email.split('@')[0]; // Pre-fill with part of email
+                predictionMessageDiv.textContent = ''; // Clear previous messages
+                authMessageDiv.textContent = ''; // Clear auth message
+
+                //console.log("User signed in:", user.email, "UID:", user.uid);
+
+                // Show My Predictions section and load predictions
+                myPredictionsSection.style.display = 'block';
+                loadMyPredictions(); // Call the new function to load predictions for this user
+
+                //console.log("User signed in:", user.email, "UID:", user.uid);
+
+                // Show Admin Game Form if the user is the admin
+                if (currentUserId === ADMIN_UID) {
+                    adminGameFormSection.style.display = 'block';
+                    //populateAdminDropdowns(); // Populate dropdowns when form becomes visible
+                } else {
+                    adminGameFormSection.style.display = 'none';
+                }
+
+                console.log("User signed in:", user.email, "UID:", user.uid);
+
+            } else {
+                // User is signed out
+                currentUserId = null;
+                currentUserEmail = null;
+
+                // Update UI for signed-out state
+                loginRegisterFormDiv.style.display = 'block'; // Show login/register form
+                userStatusDisplayDiv.style.display = 'none'; // Hide user status
+                signOutButton.style.display = 'none';
+
+                // Disable prediction form
+                setPredictionFormEnabled(false);
+                playerNameInput.value = ''; // Clear player name
+                predictionMessageDiv.textContent = 'Please sign in to submit predictions.';
+                predictionMessageDiv.style.color = 'orange';
+                authMessageDiv.textContent = ''; // Clear auth message
+
+                //console.log("User signed out.");
+
+                // Hide My Predictions section and clear its content
+                myPredictionsSection.style.display = 'none';
+                myPredictionsList.innerHTML = '<p class="text-center">No predictions submitted yet.</p>'; // Clear display
+
+                // Hide Admin Game Form when signed out
+                adminGameFormSection.style.display = 'none';
+
+                console.log("User signed out.");
+            }
+        });
+
+        // --- Auth Action Handlers ---
+        signUpButton.addEventListener('click', async () => {
+            const email = userEmailInput.value;
+            const password = userPasswordInput.value;
+
+            if (!email || !password) {
+                displayAuthMessage("Please enter both email and password.", true);
+                return;
+            }
+            if (password.length < 6) {
+                displayAuthMessage("Password should be at least 6 characters.", true);
+                return;
+            }
+
+            displayAuthMessage("Signing up...", false);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log("User signed up and signed in:", userCredential.user.email);
+                displayAuthMessage("Account created successfully! You are now signed in.", false);
+                // No need to manually update UI here, onAuthStateChanged handles it
+            } catch (error) {
+                console.error("Error signing up:", error.message);
+                displayAuthMessage(`Error signing up: ${error.message}`, true);
+            }
+        });
+
+        signInButton.addEventListener('click', async () => {
+            const email = userEmailInput.value;
+            const password = userPasswordInput.value;
+
+            if (!email || !password) {
+                displayAuthMessage("Please enter both email and password.", true);
+                return;
+            }
+
+            displayAuthMessage("Signing in...", false);
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("User signed in:", userCredential.user.email);
+                displayAuthMessage("Signed in successfully!", false);
+                // No need to manually update UI here, onAuthStateChanged handles it
+            } catch (error) {
+                console.error("Error signing in:", error.message);
+                displayAuthMessage(`Error signing in: ${error.message}`, true);
+            }
+        });
+
+        signOutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                displayAuthMessage("Signed out successfully.", false);
+                // No need to manually update UI here, onAuthStateChanged handles it
+            } catch (error) {
+                console.error("Error signing out:", error.message);
+                displayAuthMessage(`Error signing out: ${error.message}`, true);
+            }
+        });
+
+        // --- Game Loading and Prediction Submission (Modified) ---
+        async function loadGames() {
+            const gameListDiv = document.getElementById('game-list');
+            const predictionFormGamesDiv = document.getElementById('prediction-form-games');
+
+            gameListDiv.innerHTML = 'Loading games...'; // Show loading message for main game list
+            predictionFormGamesDiv.innerHTML = 'Loading games for prediction...'; // Show loading message for prediction section
+
+            try {
+                // Create a quick lookup map for team logos from the globally populated 'allTeams'
+                // 'allTeams' MUST be populated by populateAdminDropdowns() BEFORE loadGames() is called.
+                const teamLogoMap = new Map();
+                allTeams.forEach(team => {
+                    // Ensure team.name and team.logoUrl exist before mapping
+                    if (team.name && team.logoUrl) {
+                        teamLogoMap.set(team.name, team.logoUrl);
+                    }
+                });
+                console.log("Team Logo Map created:", teamLogoMap); // Debugging: Check what's in your map
+
+                const gamesRef = collection(db, 'games');
+                // Order by KickOffTime ascending for upcoming games to appear first.
+                const q = query(gamesRef, orderBy('KickOffTime', 'asc')); // Adjust limit as needed
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    gameListDiv.innerHTML = '<p>No games found in the database.</p>';
+                    predictionFormGamesDiv.innerHTML = '<p>No games available for prediction.</p>';
+                    setPredictionFormEnabled(false); // Assuming this function disables the prediction form
+                    return;
+                }
+
+                gameListDiv.innerHTML = ''; // Clear loading message
+                predictionFormGamesDiv.innerHTML = '';
+                gamesForPrediction = []; // Reset for new load (assuming gamesForPrediction is global)
+
+                snapshot.forEach(doc => {
+                    const game = doc.data();
+                    const gameId = doc.id; // Get the document ID for linking predictions
+
+                    console.log("Processing game:", game); // Debugging: Check the raw game data from Firestore
+                    console.log("Home Team Name from game:", game.HomeTeam, "Away Team Name from game:", game.AwayTeam); // Debugging: Check names exactly as they are in game document
+
+                    // Get logo URLs using the map.
+                    // IMPORTANT: Replace 'path/to/default_logo.png' with the actual path to your default logo file,
+                    // or a publicly accessible URL if you don't have a local default.
+                    const homeTeamLogo = teamLogoMap.get(game.HomeTeam) || 'path/to/default_logo.png';
+                    const awayTeamLogo = teamLogoMap.get(game.AwayTeam) || 'path/to/default_logo.png';
+
+                    console.log("Resolved Home Team Logo URL:", homeTeamLogo); // Debugging: See what URL is actually being used
+                    console.log("Resolved Away Team Logo URL:", awayTeamLogo); // Debugging: See what URL is actually being used
+
+                    // Display games in the main game list
+                    const gameCard = document.createElement('div');
+                    gameCard.classList.add('app-card', 'game-card'); // Ensure you have CSS for these classes
+
+                    // Determine status class for styling
+                    let statusClass = game.Status ? game.Status.toLowerCase() : '';
+                    if (statusClass === 'upcoming') {
+                        statusClass = 'upcoming';
+                    } else if (statusClass === 'finished') {
+                        statusClass = 'finished';
+                    } else {
+                        statusClass = ''; // Default or unknown status
+                    }
+
+                    // Prepare score display for finished games
+                    let scoreDisplay = '';
+                    if (game.Status && game.Status.toLowerCase() === 'finished') {
+                        const homeScore = game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?';
+                        const awayScore = game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?';
+                        scoreDisplay = `<p><strong>Result:</strong> ${homeScore} - ${awayScore}</p>`;
+                    }
+
+                    gameCard.innerHTML = `
+                        <div class="teams-row">
+                            <div class="team">
+                                <img src="${homeTeamLogo}" alt="${game.HomeTeam} Logo" class="team-logo">
+                                <p class="team-name">${game.HomeTeam}</p>
+                            </div>
+                            <div class="vs-separator">vs</div>
+                            <div class="team">
+                                <img src="${awayTeamLogo}" alt="${game.AwayTeam} Logo" class="team-logo">
+                                <p class="team-name">${game.AwayTeam}</p>
+                            </div>
+                        </div>
+                        <p><strong>League:</strong> ${game.League || 'N/A'}</p>
+                        <p><strong>Fecha:</strong> ${game.Fecha || 'N/A'}</p> 
+                        <p><strong>Kick-off:</strong> ${new Date(game.KickOffTime).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }) || 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="status ${statusClass}">${game.Status || 'N/A'}</span></p>
+                        ${scoreDisplay}
+                    `;
+                    gameListDiv.appendChild(gameCard);
+
+                    // Populate prediction form for upcoming games only
+                    if (game.Status && game.Status.toLowerCase() === 'upcoming') {
+                        const predictionGameCard = document.createElement('div');
+                        predictionGameCard.classList.add('app-card', 'prediction-game-card'); // Ensure you have CSS for these classes
+                        
+                        // HTML for the prediction form game card
+                        predictionGameCard.innerHTML = `
+                            <div class="teams-row">
+                                <div class="team">
+                                    <img src="${homeTeamLogo}" alt="${game.HomeTeam} Logo" class="team-logo-small">
+                                    <span class="team-name">${game.HomeTeam}</span>
+                                </div>
+                                <div class="vs-separator">vs</div>
+                                <div class="team">
+                                    <img src="${awayTeamLogo}" alt="${game.AwayTeam} Logo" class="team-logo-small">
+                                    <span class="team-name">${game.AwayTeam}</span>
+                                </div>    
+                            </div>
+                            <p class="game-detail-line"><strong>Fecha:</strong> ${game.Fecha || 'N/A'}</p>       
+                            <div class="prediction-inputs">
+                                <input type="number" data-game-id="${gameId}" data-team="home" placeholder="H" min="0" class="score-input">
+                                <span class="score-separator">-</span>
+                                <input type="number" data-game-id="${gameId}" data-team="away" placeholder="A" min="0" class="score-input">
+                            </div>                     
+                        `;
+                        predictionFormGamesDiv.appendChild(predictionGameCard);
+                        gamesForPrediction.push({ id: gameId, ...game }); // Store upcoming games with their Firestore ID
+                    }
+                });
+
+                // Initial state of prediction form based on whether there are games to predict
+                if (gamesForPrediction.length === 0) {
+                    setPredictionFormEnabled(false); // Assuming this function disables the prediction form
+                    predictionFormGamesDiv.innerHTML = '<p>No upcoming games to predict.</p>';
+                } else {
+                    // This will be overridden by onAuthStateChanged if user is not signed in
+                    setPredictionFormEnabled(!!currentUserId); // Enable only if user is already signed in (assuming currentUserId is global)
+                }
+
+            } catch (error) {
+                console.error("Error fetching games: ", error);
+                gameListDiv.innerHTML = '<p>Error loading games. Please check the console for details.</p>';
+                predictionFormGamesDiv.innerHTML = '<p>Error loading games for prediction.</p>';
+                setPredictionFormEnabled(false); // Disable if error
+            }
+        }
+
+
+
+        async function submitPredictions() {
+            if (!currentUserId) {
+                predictionMessageDiv.textContent = 'You must be signed in to submit predictions!';
+                predictionMessageDiv.style.color = 'red';
+                return;
+            }
+
+            const playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                predictionMessageDiv.textContent = 'Please enter your name for the prediction!';
+                predictionMessageDiv.style.color = 'red';
+                return;
+            }
+
+            setPredictionFormEnabled(false); // Disable button and inputs to prevent double submission
+            predictionMessageDiv.textContent = '<p class="loading-message">Submitting predictions...</p>';
+            predictionMessageDiv.style.color = 'orange';
+
+            const predictionInputs = document.querySelectorAll('#prediction-form-games input[type="number"]');
+            const predictions = {};
+
+            predictionInputs.forEach(input => {
+                const gameId = input.dataset.gameId;
+                const team = input.dataset.team;
+                const score = parseInt(input.value, 10);
+
+                if (!predictions[gameId]) {
+                    predictions[gameId] = { gameId: gameId };
+                }
+                if (team === 'home') {
+                    predictions[gameId].predictedHomeScore = isNaN(score) ? null : score;
+                } else {
+                    predictions[gameId].predictedAwayScore = isNaN(score) ? null : score;
+                }
+            });
+
+            let successCount = 0;
+            let errorOccurred = false;
+
+            for (const gameId in predictions) {
+                if (predictions.hasOwnProperty(gameId)) {
+                    const prediction = predictions[gameId];
+
+                    if (prediction.predictedHomeScore === null || prediction.predictedAwayScore === null) {
+                        console.warn(`Skipping prediction for game ${gameId} by ${playerName}: Incomplete scores.`);
+                        continue;
+                    }
+
+                    try {
+                        const predictionsRef = collection(db, 'predictions');
+                        const existingPredictionsQuery = query(
+                            predictionsRef,
+                            where('userId', '==', currentUserId),
+                            where('gameId', '==', gameId)
+                        );
+                        const existingPredictionsSnapshot = await getDocs(existingPredictionsQuery);
+
+                        const predictionData = {
+                            userId: currentUserId,
+                            playerName: playerName,
+                            gameId: gameId,
+                            predictedHomeScore: prediction.predictedHomeScore,
+                            predictedAwayScore: prediction.predictedAwayScore,
+                            timestamp: new Date() // Update timestamp on every submission
+                        };
+
+                        if (!existingPredictionsSnapshot.empty) {
+                            // Prediction already exists, so update it
+                            const existingDoc = existingPredictionsSnapshot.docs[0]; // Get the first (and should be only) doc
+                            await updateDoc(doc(db, 'predictions', existingDoc.id), predictionData);
+                            console.log(`Updated prediction for game ${gameId} by ${playerName} (Doc ID: ${existingDoc.id})`);
+                        } else {
+                            // No existing prediction, so add a new one
+                            await addDoc(predictionsRef, predictionData);
+                            console.log(`Added new prediction for game ${gameId} by ${playerName}`);
+                        }
+
+                        successCount++;
+                    } catch (error) {
+                        console.error("Error submitting prediction for game", gameId, ": ", error);
+                        errorOccurred = true;
+                    }
+                }
+            }
+
+            if (successCount > 0 && !errorOccurred) {
+                predictionMessageDiv.textContent = `Successfully submitted ${successCount} prediction(s)!`;
+                predictionMessageDiv.style.color = 'green';
+                // Clear prediction input fields, keep player name
+                predictionInputs.forEach(input => input.value = '');
+                // ADD THIS LINE BELOW to refresh "My Predictions"
+                loadMyPredictions(); // Refresh "My Predictions" after submission!
+            } else if (successCount > 0 && errorOccurred) {
+                predictionMessageDiv.textContent = `Submitted ${successCount} prediction(s) with some errors. Check console.`;
+                predictionMessageDiv.style.color = 'orange';
+            } else {
+                predictionMessageDiv.textContent = 'No valid predictions submitted.';
+                predictionMessageDiv.style.color = 'red';
+            }
+            // Ensure this is outside the if/else if/else block
+            setPredictionFormEnabled(true);
+        }
+
+        // --- New Function: Load and Display My Predictions ---
+        async function loadMyPredictions() {
+            if (!currentUserId) {
+                myPredictionsList.innerHTML = '<p class="text-center">Please sign in to see your predictions.</p>';
+                return;
+            }
+
+            myPredictionsList.innerHTML = '<p class="text-center">Loading your predictions...</p>';
+
+            try {
+                const myPredictionsRef = collection(db, 'predictions');
+                const q = query(myPredictionsRef, where('userId', '==', currentUserId), orderBy('timestamp', 'desc'));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    myPredictionsList.innerHTML = '<p class="text-center">You have not submitted any predictions yet.</p>';
+                    return;
+                }
+
+                myPredictionsList.innerHTML = ''; // Clear loading message
+
+                // Fetch all game data once to avoid repeated calls in the loop
+                const gamesMap = new Map();
+                const gamesSnapshot = await getDocs(collection(db, 'games'));
+                gamesSnapshot.forEach(doc => {
+                    gamesMap.set(doc.id, doc.data());
+                });
+
+
+                snapshot.forEach(predictionDoc => {
+                    const prediction = predictionDoc.data();
+                    const gameId = prediction.gameId;
+                    const game = gamesMap.get(gameId); // Get game details from our map
+
+                    if (game) {
+                        const predictionCard = document.createElement('div');
+                        predictionCard.classList.add('app-card','game-card'); // Reuse game-card style
+
+                        // Format timestamp for display
+                        const predictionTime = prediction.timestamp ? new Date(prediction.timestamp.toDate()).toLocaleString() : 'N/A';
+
+
+                        predictionCard.innerHTML = `
+                            <h3>${game.HomeTeam} vs ${game.AwayTeam}</h3>
+                            <p><strong>Your Prediction:</strong> ${prediction.predictedHomeScore} - ${prediction.predictedAwayScore}</p>
+                            <p><strong>Game Status:</strong> <span class="status ${game.Status ? game.Status.toLowerCase() : ''}">${game.Status || 'N/A'}</span></p>
+                            ${game.Status && game.Status.toLowerCase() === 'finished' ? `<p><strong>Actual Result:</strong> ${game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?'} - ${game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?'}</p>` : ''}
+                            <p><small>Submitted: ${predictionTime}</small></p>
+                        `;
+                        myPredictionsList.appendChild(predictionCard);
+                    } else {
+                        console.warn(`Game details not found for gameId: ${gameId} in prediction ${predictionDoc.id}`);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error loading user predictions: ", error);
+                myPredictionsList.innerHTML = '<p class="text-center" style="color: red;">Error loading your predictions. Please try again later.</p>';
+            }
+        }
+
+        // This function populates both home and away team dropdowns with optgroups
+        function populateTeamDropdownsForAdmin() {
+            [adminHomeTeamSelect, adminAwayTeamSelect].forEach(selectElement => {
+                // Clear all existing options in the dropdown
+                selectElement.innerHTML = '';
+
+                // Add the default "Select team" option at the very top
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "Select team";
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                selectElement.appendChild(defaultOption);
+
+                // Apply LEAGUE SORTING LOGIC FOR OPTGROUPS USING 'priority' FIELD
+                allLeagues.sort((a, b) => {
+                    const priorityA = a.priority !== undefined && typeof a.priority === 'number' ? a.priority : Infinity;
+                    const priorityB = b.priority !== undefined && typeof b.priority === 'number' ? b.priority : Infinity;
+
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB;
+                    }
+                    return a.name.localeCompare(b.name); // Fallback to alphabetical
+                });
+
+
+                // Iterate through each league to create an optgroup
+                allLeagues.forEach(league => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = league.name; // Set the label for the category (e.g., "Premier League")
+
+                    // Filter teams that belong to the current league using their nationalLeagueId
+                    const teamsInThisLeague = allTeams.filter(team => team.nationalLeagueId === league.id);
+
+                    // Sort teams within this specific league alphabetically (this stays as is)
+                    teamsInThisLeague.sort((a, b) => a.name.localeCompare(b.name));
+
+                    // Add each team as an option inside its league's optgroup
+                    teamsInThisLeague.forEach(team => {
+                        const option = document.createElement('option');
+                        option.value = team.name;
+                        option.textContent = team.name;
+                        optgroup.appendChild(option);
+                    });
+
+                    // Only append the optgroup to the select if it actually contains teams
+                    if (teamsInThisLeague.length > 0) {
+                        selectElement.appendChild(optgroup);
+                    }
+                });
+            });
+        }
+
+        // --- Admin Function: Populate dropdowns ---
+        async function populateAdminDropdowns() {
+            try {
+                // Fetch Teams from Firestore
+                const teamsRef = collection(db, 'teams');
+                const teamsSnapshot = await getDocs(query(teamsRef, orderBy('name')));
+                allTeams = []; // Clear previous data
+                teamsSnapshot.forEach(doc => {
+                    // IMPORTANT: Ensure you're storing the Firestore document ID here as 'id'
+                    // We need 'id' for matching teams to leagues
+                    allTeams.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Fetched teams from Firestore:", allTeams.map(t => t.name));
+
+                // Fetch Leagues from Firestore
+                const leaguesRef = collection(db, 'nationalLeagues');
+                const leaguesSnapshot = await getDocs(query(leaguesRef, orderBy('name')));
+                allLeagues = []; // Clear previous data
+                leaguesSnapshot.forEach(doc => {
+                    // IMPORTANT: Ensure you're storing the Firestore document ID here as 'id'
+                    // We need 'id' for matching leagues to teams
+                    allLeagues.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Fetched leagues from Firestore:", allLeagues.map(l => l.name));
+
+
+                // --- START: League Dropdown Population (adminLeagueSelect) ---
+
+                // Clear existing options
+                adminLeagueSelect.innerHTML = '';
+
+                // Add default "Select league" option
+                const defaultLeagueOption = document.createElement('option');
+                defaultLeagueOption.value = "";
+                defaultLeagueOption.textContent = "Select league";
+                defaultLeagueOption.disabled = true;
+                defaultLeagueOption.selected = true;
+                adminLeagueSelect.appendChild(defaultLeagueOption);
+
+                const desiredLeaguesForAdminDropdown = [
+                    "Premier League",
+                    "La Liga",
+                    "Bundesliga",
+                    "Serie A",
+                    "Ligue 1",
+                    "Champions League", // Include Champions League here if you want to assign games to it
+                    "Europa League",
+                    "Conmebol",
+                    "World Cup",
+                    "Copa America",
+                    "Eurocopa",
+                    "International Friendlies"
+                    // Add any other specific leagues you want in this dropdown
+                ];
+
+                // Apply LEAGUE SORTING LOGIC USING 'priority' FIELD
+                allLeagues.sort((a, b) => {
+                    const priorityA = a.priority !== undefined && typeof a.priority === 'number' ? a.priority : Infinity;
+                    const priorityB = b.priority !== undefined && typeof b.priority === 'number' ? b.priority : Infinity;
+
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB;
+                    }
+                    return a.name.localeCompare(b.name); // Fallback to alphabetical
+                });
+
+
+                desiredLeaguesForAdminDropdown.forEach(leagueName => {
+                    const option = document.createElement('option');
+                    option.value = leagueName;
+                    option.textContent = leagueName;
+                    adminLeagueSelect.appendChild(option);
+                });
+                // --- END: League Dropdown Population ---
+
+
+                // Call the function to populate the team dropdowns (which will also sort by priority)
+                populateTeamDropdownsForAdmin();
+
+
+                // Set default Kick-off time (keep this as is)
+                const now = new Date();
+                now.setHours(now.getHours() + 24);
+                const isoString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, -8);
+                adminKickOffTimeInput.value = isoString;
+
+            } catch (error) {
+                console.error("Error populating admin dropdowns from Firestore:", error);
+                if (adminMessageDiv) {
+                    adminMessageDiv.textContent = 'Error loading teams/leagues for admin form.';
+                    adminMessageDiv.style.color = 'red';
+                }
+            }
+        }
+        
+
+        // --- Admin Function: Handle Game Addition ---
+        async function handleAdminGameAdd() {
+            adminMessageDiv.textContent = 'Adding game...';
+            adminMessageDiv.style.color = 'orange';
+            addGameButton.disabled = true; // Disable button during submission
+
+            const homeTeam = adminHomeTeamSelect.value;
+            const awayTeam = adminAwayTeamSelect.value;
+            const league = adminLeagueSelect.value;
+            const kickOffTimeStr = adminKickOffTimeInput.value;
+            const status = adminStatusSelect.value;
+            const fecha = adminFechaInput.value; // Add this line
+            const homeScore = adminHomeScoreInput.value ? parseInt(adminHomeScoreInput.value, 10) : null;
+            const awayScore = adminAwayScoreInput.value ? parseInt(adminAwayScoreInput.value, 10) : null;
+
+            // Basic validation
+            if (!homeTeam || !awayTeam || !league || !kickOffTimeStr || !status) {
+                adminMessageDiv.textContent = 'Please fill in all required fields (Teams, League, Kick-off Time, Status).';
+                adminMessageDiv.style.color = 'red';
+                addGameButton.disabled = false;
+                return;
+            }
+            if (homeTeam === awayTeam) {
+                adminMessageDiv.textContent = 'Home Team and Away Team cannot be the same.';
+                adminMessageDiv.style.color = 'red';
+                addGameButton.disabled = false;
+                return;
+            }
+
+            try {
+                const kickOffTime = new Date(kickOffTimeStr);
+                if (isNaN(kickOffTime.getTime())) { // Check if date is valid
+                    adminMessageDiv.textContent = 'Invalid Kick-off Time.';
+                    adminMessageDiv.style.color = 'red';
+                    addGameButton.disabled = false;
+                    return;
+                }
+
+                const gameData = {
+                    HomeTeam: homeTeam,
+                    AwayTeam: awayTeam,
+                    KickOffTime: kickOffTime.toISOString(), // Store as ISO string for simplicity
+                    League: league,
+                    Status: status,
+                    Fecha: fecha.trim(), // Add this line
+                };
+
+                if (status === 'finished' || status === 'live') {
+                    gameData.HomeScore = homeScore;
+                    gameData.AwayScore = awayScore;
+                } else {
+                    gameData.HomeScore = null;
+                    gameData.AwayScore = null;
+                }
+
+                await addDoc(collection(db, 'games'), gameData);
+                adminMessageDiv.textContent = 'Game added successfully!';
+                adminMessageDiv.style.color = 'green';
+
+                // Clear form for next entry
+                adminHomeTeamSelect.value = ""; // Reset to default "Select team"
+                adminAwayTeamSelect.value = "";
+                adminLeagueSelect.value = "";
+                adminStatusSelect.value = "upcoming";
+                adminFechaInput.value = ''; // Clear Fecha input
+                adminHomeScoreInput.value = "";
+                adminAwayScoreInput.value = "";
+
+                await initializeAppContent(); // This will re-populate dropdowns and re-load games correctly
+
+            } catch (error) {
+                console.error("Error adding game: ", error);
+                adminMessageDiv.textContent = `Error adding game: ${error.message}`;
+                adminMessageDiv.style.color = 'red';
+            } finally {
+                addGameButton.disabled = false; // Re-enable button
+            }
+        }
+
+        // --- Main Application Initialization Function ---
+        async function initializeAppContent() {
+            try {
+                // IMPORTANT: First, populate teams and leagues data, and WAIT for it
+                console.log("Initializing app content: Populating admin dropdowns (and global data)...");
+                await populateAdminDropdowns(); // This will populate allTeams and allLeagues
+
+                // Then, after data is ready, load and display games
+                console.log("Initializing app content: Loading games...");
+                await loadGames();
+
+                // If you have a separate function to load predictions based on auth state, call it here,
+                // or ensure your onAuthStateChanged listener handles it.
+                // For example:
+                // if (currentUserId) {
+                //     await loadUserPredictions(currentUserId);
+                // }
+                
+                console.log("App content initialization complete.");
+
+            } catch (error) {
+                console.error("Error during app content initialization:", error);
+            }
+        }
+
+        forgotPasswordLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // 1. Get the email address from the email input field
+            const email = userEmailInput.value.trim();
+            
+            // Check if email is empty
+            if (!email) {
+                resetModalBody.innerHTML = 'Please enter your email address in the field above before clicking "Forgot Password."';
+                resetModal.show(); // <-- Use the NATIVE JS modal instance
+                return;
+            }
+
+            // Clear previous message
+            resetModalBody.innerHTML = 'Sending password reset link...';
+            resetModal.show(); // <-- Use the NATIVE JS modal instance to show loading state
+
+            try {
+                // 2. Send the password reset email using Firebase Auth
+                await sendPasswordResetEmail(auth, email);
+
+                // 3. Success Feedback
+                resetModalBody.innerHTML = `
+                    <p>Password reset email successfully sent to <strong>${email}</strong>.</p>
+                    <p>Please check your inbox (and spam folder) for instructions on resetting your password.</p>
+                `;
+
+            } catch (error) {
+                let errorMessage = "An error occurred while sending the reset email. Please try again.";
+                
+                // Handle common Firebase errors
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = "No user found with that email address.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "The email address is not valid.";
+                } else {
+                    console.error("Password reset error:", error);
+                    // Fallback for unexpected errors
+                    errorMessage = `Error: ${error.message || error.code}.`;
+                }
+                
+                // 4. Error Feedback
+                resetModalBody.innerHTML = `<p class="text-danger">${errorMessage}</p>`;
+                
+                // The modal is already shown, so we just update the content.
+            }
+        });
+
+        closeHeaderButton.addEventListener('click', () => {
+            // resetModal is the native JS instance initialized earlier: const resetModal = new bootstrap.Modal(resetModalElement);
+            resetModal.hide();
+        });
+
+        closeFooterButton.addEventListener('click', () => {
+            resetModal.hide();
+        });
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Submit predictions button listener
+            const submitPredictionsButton = document.getElementById('submitPredictions'); // Ensure this element is defined globally
+            if (submitPredictionsButton) {
+                submitPredictionsButton.addEventListener('click', submitPredictions);
+            } else {
+                console.warn("submitPredictionsButton not found. Check HTML ID.");
+            }
+
+            // Admin Add Game button listener
+            if (addGameButton) { // addGameButton should be globally defined
+                addGameButton.addEventListener('click', handleAdminGameAdd);
+            } else {
+                console.warn("addGameButton not found. Check HTML ID.");
+            }
+
+            // ===========================================================
+            // CRUCIAL CHANGE: Start the main app initialization here!
+            // ===========================================================
+            initializeAppContent();
+        });
+
+    </script>
 
 </body>
-
 </html>
