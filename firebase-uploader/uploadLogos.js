@@ -90,6 +90,7 @@ const teamsData = [
     // { id: "hellas_verona", name: "Hellas Verona", nationalLeagueId: "serie_a" },
     // { id: "inter_milan", name: "Inter Milan", nationalLeagueId: "serie_a" },
     // { id: "juventus", name: "Juventus", nationalLeagueId: "serie_a" },
+    { id: "lazio", name: "Lazio", nationalLeagueId: "serie_a" },
     // { id: "lecce", name: "Lecce", nationalLeagueId: "serie_a" },
     // { id: "ac_milan", name: "AC Milan", nationalLeagueId: "serie_a" },
     // { id: "monza", name: "Monza", nationalLeagueId: "serie_a" },
@@ -189,14 +190,14 @@ const teamsData = [
     // { id: "botafogo", name: "Botafogo", nationalLeagueId: "other_european_clubs" },
     // { id: "monterrey", name: "Monterrey", nationalLeagueId: "other_european_clubs" },
     // { id: "pachuca", name: "Pachuca", nationalLeagueId: "other_european_clubs" },
-    { id: "ldu-quito", name: "LDU Quito", nationalLeagueId: "other_european_clubs" },
-    { id: "independiente-del-valle", name: "Independiente del Valle", nationalLeagueId: "other_european_clubs" },
-    { id: "once-caldas", name: "Once Caldas", nationalLeagueId: "other_european_clubs" },
-    { id: "são-paulo", name: "São Paulo", nationalLeagueId: "other_european_clubs" },
-    { id: "estudiantes-de-la-plata", name: "Estudiantes de La Plata", nationalLeagueId: "other_european_clubs" },
-    { id: "lanús", name: "Lanús", nationalLeagueId: "other_european_clubs" },
-    { id: "vélez-sarsfield", name: "Vélez Sarsfield", nationalLeagueId: "other_european_clubs" },
-    { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" }
+    // { id: "ldu-quito", name: "LDU Quito", nationalLeagueId: "other_european_clubs" },
+    // { id: "independiente-del-valle", name: "Independiente del Valle", nationalLeagueId: "other_european_clubs" },
+    // { id: "once-caldas", name: "Once Caldas", nationalLeagueId: "other_european_clubs" },
+    // { id: "são-paulo", name: "São Paulo", nationalLeagueId: "other_european_clubs" },
+    // { id: "estudiantes-de-la-plata", name: "Estudiantes de La Plata", nationalLeagueId: "other_european_clubs" },
+    // { id: "lanús", name: "Lanús", nationalLeagueId: "other_european_clubs" },
+    // { id: "vélez-sarsfield", name: "Vélez Sarsfield", nationalLeagueId: "other_european_clubs" },
+    // { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" }
     
 ];
 
