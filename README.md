@@ -39,6 +39,19 @@ A web application for predicting football match outcomes, tracking results, and 
 4.  **Open in Browser**:
     After the server starts, open your web browser and navigate to the address provided in the terminal, usually `http://localhost:8000`.
 
+## Security Notes
+
+This repository contained sensitive Firebase service account credentials and other secrets. Those have been redacted from the repository and added to `.gitignore` to prevent accidental commits.
+
+Recommended next steps:
+- Immediately rotate the exposed service account credentials in the Google Cloud Console.
+- Do not commit credentials to the repository. Instead, store them in a secure secrets manager or local `.env` files excluded by `.gitignore`.
+- If you used the service account elsewhere (CI, servers), update those configurations with the new credentials.
+
+To run the uploader locally (safe approach):
+1. Create a local `serviceAccountKey.json` file and place it in `firebase-uploader/` (not committed).
+2. Run `cd firebase-uploader && npm install && node uploadLogos.js`.
+
 #### 🛠️ Technologies Used
 
 * **Front-end**: HTML, CSS, JavaScript (ES Modules)
