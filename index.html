@@ -40,7 +40,7 @@
             <div class="collapse navbar-collapse" id="navbarsExample03">
                 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="tabla.html">Tabla</a>
+                        <a class="nav-link" href="leaderboard.html">Leaderboard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="game_weeks.html">Game Weeks</a>
@@ -227,7 +227,7 @@
         <div class="m-md-3 p-5 portfolio-section">
             <h2 class='section-heading'>Eliminatorias Anónimas</h2>
             <p>Vik, manda taaaaablaaaaa! 🗣️</p>
-            <a class="btn btn-primary-custom" href="tabla.html">Tabla</a>
+            <a class="btn btn-primary-custom" href="leaderboard.html">Leaderboard</a>
         </div>
     </section>
 
@@ -259,19 +259,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, query, orderBy, limit, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         // Import Authentication functions
-        import { getAuth, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"; // ADD THIS LINE
+        import { getAuth, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        // Import centralized Firebase configuration
+        import { firebaseConfig } from "./js/firebase-config.js";
         
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-        apiKey: "AIzaSyDLfJ01cou9x4dBIirKbb016a69phKXOPc",
-        authDomain: "ea-football-predictor.firebaseapp.com",
-        projectId: "ea-football-predictor",
-        storageBucket: "ea-football-predictor.firebasestorage.app",
-        messagingSenderId: "419246128197",
-        appId: "1:419246128197:web:3082ec10e3e4e81432b72c"
-        };
-
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app); // Get a reference to the Firestore database
