@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - EA Predictor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles_final.css">
+    <link rel="icon" href="./css/icon/favicon-ball.ico" />
+</head>
+<body class="bg-dark text-white">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">EA Predictor</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="leaderboard.html">Leaderboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="game_weeks.html">Game Weeks</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h1 class="text-center mb-5">Player Leaderboard & Game Results</h1>
+
+        <div id="overall-leaderboard-container" class="game-results-card mb-5" style="display: none;">
+            <h2 class="text-center mb-4">Overall Player Standings</h2>
+            <div id="leaderboard-list">
+                <p class="text-center text-muted">Calculating overall scores...</p>
+            </div>
+        </div>
+
+        <div id="all-games-results-container">
+            <p class="text-center text-muted">Loading game results and predictions...</p>
+        </div>
+    </div>
+
+    <!-- Player History Modal -->
+    <div id="player-history-modal" class="player-history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="player-history-title">Player History</h3>
+                <span class="close-modal" style="cursor: pointer;" onclick="document.getElementById('player-history-modal').style.display = 'none';">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="player-history-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { calculatePoints, calculatePlayerStats } from "./js/calculations.js";
+        import { firebaseConfig } from "./js/firebase-config.js";
+        import { renderLeaderboardTable, createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers } from "./js/ui-helpers.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // UI Elements
+        const allGamesResultsContainer = document.getElementById('all-games-results-container');
+        const overallLeaderboardContainer = document.getElementById('overall-leaderboard-container');
+        const leaderboardList = document.getElementById('leaderboard-list');
+
+        // Store user display names for modal
+        let userDisplayNamesGlobal = {};
+
+        // Create player history modal on page load
+        createPlayerHistoryModal();
+
+        // Setup global player click handler
+        setupPlayerClickHandlers((userId) => {
+            openPlayerHistory(userId, db, userDisplayNamesGlobal);
+        });
+
+        // --- Load All Results Function ---
+        async function loadAllResults() {
+            allGamesResultsContainer.innerHTML = '<p class="text-center text-muted">Loading game results and predictions...</p>';
+
+            try {
+                // 1. Fetch all games
+                const gamesSnapshot = await getDocs(query(collection(db, 'games'), orderBy('KickOffTime', 'desc')));
+                const games = [];
+                const gamesById = {};
+                
+                gamesSnapshot.forEach(doc => {
+                    const gameData = { id: doc.id, ...doc.data() };
+                    games.push(gameData);
+                    gamesById[doc.id] = gameData;
+                });
+
+                // 2. Fetch all predictions
+                const predictionsSnapshot = await getDocs(query(collection(db, 'predictions'), orderBy('timestamp', 'desc')));
+                const predictions = [];
+                
+                predictionsSnapshot.forEach(doc => {
+                    predictions.push(doc.data());
+                });
+
+                // 3. Use the centralized calculatePlayerStats function from calculations.js
+                const playerStats = calculatePlayerStats(games, predictions);
+
+                // 4. Build userNames map from predictions
+                const userNames = {};
+                predictions.forEach(pred => {
+                    const userId = pred.userId || 'unknown';
+                    const playerName = pred.playerName || 'Anonymous';
+                    userNames[userId] = playerName;
+                });
+
+                // Store for global access in modals
+                userDisplayNamesGlobal = userNames;
+
+                // 5. Render the overall leaderboard using ui-helpers
+                renderLeaderboardContainer(playerStats, userNames);
+
+                // 6. Render the individual game results
+                allGamesResultsContainer.innerHTML = '';
+
+                if (games.length === 0) {
+                    allGamesResultsContainer.innerHTML = '<p class="text-center">No games found.</p>';
+                    return;
+                }
+
+                // Sort games by KickOffTime (descending - most recent first)
+                const sortedGames = [...games].sort((a, b) => {
+                    const dateA = a.KickOffTime && a.KickOffTime.toDate ? a.KickOffTime.toDate() : new Date(a.KickOffTime);
+                    const dateB = b.KickOffTime && b.KickOffTime.toDate ? b.KickOffTime.toDate() : new Date(b.KickOffTime);
+                    return dateB - dateA;
+                });
+
+                // Render each game with its predictions
+                for (const game of sortedGames) {
+                    const gameCard = document.createElement('div');
+                    gameCard.classList.add('game-results-card', 'app-card');
+
+                    // Get predictions for this game
+                    const gamePredictions = predictions.filter(p => p.gameId === game.id);
+
+                    const actualResultDisplay = (game.Status === 'finished' || game.Status === 'live') && game.HomeScore !== null && game.AwayScore !== null
+                        ? `<p class="actual-result">Actual Result: ${game.HomeScore} - ${game.AwayScore}</p>`
+                        : `<p class="actual-result">Actual Result: Not available yet</p>`;
+
+                    const predictionsHTML = (game.Status === 'finished' || game.Status === 'live')
+                        ? gamePredictions.length > 0
+                            ? gamePredictions.map(prediction => {
+                                const points = calculatePoints(prediction, game);
+                                let pointsDisplay = '';
+                                let pointsClass = 'text-muted';
+
+                                if (points === null) {
+                                    pointsDisplay = 'N/A';
+                                    pointsClass = 'pending';
+                                } else if (points === 10) {
+                                    pointsDisplay = `(${points} points - Perfect Score!)`;
+                                    pointsClass = 'text-success';
+                                } else if (points >= 5) {
+                                    pointsDisplay = `(${points} points)`;
+                                    pointsClass = 'text-info';
+                                } else if (points > 0) {
+                                    pointsDisplay = `(${points} points)`;
+                                    pointsClass = 'text-warning';
+                                } else {
+                                    pointsDisplay = `(${points} points)`;
+                                    pointsClass = 'text-danger';
+                                }
+
+                                return `
+                                    <div class="prediction-entry">
+                                        <span><strong>${prediction.playerName || 'Anonymous'}</strong> predicted: ${prediction.predictedHomeScore} - ${prediction.predictedAwayScore}</span>
+                                        <span class="score ${pointsClass}">${pointsDisplay}</span>
+                                    </div>
+                                `;
+                            }).join('')
+                            : '<p class="text-muted">No predictions submitted for this game yet.</p>'
+                        : '<p class="text-muted">Predictions are hidden until the game is finished.</p>';
+
+                    gameCard.innerHTML = `
+                        <h3 class="game-header">
+                            ${game.HomeTeam} vs ${game.AwayTeam}
+                            <span class="game-status ${game.Status}">${game.Status.toUpperCase()}</span>
+                        </h3>
+                        <p class="game-info">${game.League} - ${new Date(game.KickOffTime).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</p>
+                        ${game.Fecha ? `<p class="game-info">Fecha: ${game.Fecha}</p>` : ''}
+                        ${actualResultDisplay}
+                        <hr>
+                        <h4 class="mb-3">All Predictions:</h4>
+                        <div class="predictions-list">
+                            ${predictionsHTML}
+                        </div>
+                    `;
+                    allGamesResultsContainer.appendChild(gameCard);
+                }
+
+            } catch (error) {
+                console.error("Error loading all results: ", error);
+                allGamesResultsContainer.innerHTML = '<p class="text-center" style="color: red;">Error loading results. Please try again later.</p>';
+            }
+        }
+
+        // --- Render Overall Leaderboard ---
+        function renderLeaderboardContainer(playerStats, userNames) {
+            leaderboardList.innerHTML = '';
+            overallLeaderboardContainer.style.display = 'block';
+
+            // Convert playerStats array to entries and sort by stats
+            const sortedPlayers = Object.entries(playerStats).sort(([idA, statsA], [idB, statsB]) => {
+                if (statsB.totalPoints !== statsA.totalPoints) {
+                    return statsB.totalPoints - statsA.totalPoints;
+                }
+                if (statsB.fechasWonCount !== statsA.fechasWonCount) {
+                    return statsB.fechasWonCount - statsA.fechasWonCount;
+                }
+                if (statsB.perfectScoresCount !== statsA.perfectScoresCount) {
+                    return statsB.perfectScoresCount - statsA.perfectScoresCount;
+                }
+                return (userNames[idA] || '').localeCompare(userNames[idB] || '');
+            });
+
+            if (sortedPlayers.length === 0) {
+                leaderboardList.innerHTML = '<p class="text-center text-muted">No total scores to display yet.</p>';
+                return;
+            }
+
+            // Use ui-helpers to render the table with click handler callback
+            const table = renderLeaderboardTable(sortedPlayers, userNames, (userId) => {
+                openPlayerHistory(userId, db, userDisplayNamesGlobal);
+            });
+            leaderboardList.appendChild(table);
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', loadAllResults);
+    </script>
+</body>
+</html>
