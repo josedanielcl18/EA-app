@@ -1,3 +1,15 @@
+node_modules/
+npm-debug.log*
+.env
+/.env.local
+firebase-uploader/serviceAccountKey.json
+serviceAccountKey.json
+coverage/
+.DS_Store
+dist/
+/.idea/
+.vscode/
+*.log
 # Logs
 logs
 *.log
