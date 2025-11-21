@@ -1,0 +1,760 @@
+/* ===================================
+   EA Predictor - Final Consolidated Styles
+   Combines styles from styles2.css and game_results_summary.html
+   =================================== */
+
+/* ===================================
+   Base Colors & Variables
+   =================================== */
+:root {
+    --color-primary: #019D9A;
+    --color-secondary: #3fc1c9;
+    --color-accent-cyan: #00e5ff;
+    --color-accent-lime: #76ff03;
+    --color-accent-yellow: #ffeb3b;
+    --color-accent-orange: #ff5722;
+    --color-bg-dark: #1a1d26;
+    --color-bg-card: #252a34;
+    --color-text-muted: #7e8a99;
+    --color-text-light: #bdbdbd;
+    --color-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ===================================
+   Game Results Card Styles (from styles2.css)
+   =================================== */
+.game-results-card {
+    background-color: var(--color-bg-card);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.game-results-card .game-header {
+    font-weight: 600;
+    color: var(--color-accent-cyan);
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.game-results-card .game-info {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 10px;
+}
+
+.game-results-card .game-info .game-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.game-results-card .game-status.finished {
+    background-color: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+}
+
+.game-results-card .game-status.ongoing {
+    background-color: rgba(255, 235, 59, 0.3);
+    color: #ffc107;
+}
+
+.game-results-card .game-status.upcoming {
+    background-color: rgba(158, 158, 158, 0.2);
+    color: var(--color-text-light);
+}
+
+/* Prediction Entry Styles */
+.prediction-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px;
+    background-color: rgba(1, 157, 154, 0.05);
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.prediction-entry .score {
+    font-weight: 700;
+    color: var(--color-accent-yellow) !important;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.prediction-entry .score.pending {
+    color: #6c757d !important;
+}
+
+.prediction-entry .score.perfect {
+    color: #76ff03 !important; /* Bright green for perfect scores */
+}
+
+.prediction-entry .score.high {
+    color: #00e5ff !important; /* Cyan for high scores */
+}
+
+.prediction-entry .score.medium {
+    color: #ffc107 !important; /* Yellow for medium scores */
+}
+
+.prediction-entry .score.low {
+    color: #ff6b6b !important; /* Red for low scores */
+}
+
+.prediction-entry .score.zero {
+    color: #6c757d !important; /* Gray for no points */
+}
+
+.prediction-entry .actual-result {
+    font-weight: 700;
+    color: var(--color-accent-cyan);
+}
+
+/* ===================================
+   Game Results Summary Matrix Styles
+   =================================== */
+
+/* Gameweek Selector */
+.gameweek-selector {
+    margin-bottom: 30px;
+}
+
+.gameweek-button {
+    margin: 5px;
+    font-weight: 600;
+    background-color: var(--color-bg-dark);
+    border: 1px solid var(--color-primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gameweek-button:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.gameweek-button.active {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: white !important;
+}
+
+/* View Options */
+.view-options {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.toggle-predictions {
+    background-color: var(--color-bg-dark);
+    border: 1px solid var(--color-primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.toggle-predictions:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* Score Cell Display Options */
+.score-cell.with-prediction {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 8px 4px !important;
+}
+
+.actual-score {
+    font-weight: 700;
+    font-size: 1rem;
+    display: block;
+}
+
+.predicted-score {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    font-style: italic;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 2px;
+    margin-top: 2px;
+    display: block;
+}
+
+/* Results Matrix Container */
+.results-matrix-container {
+    background-color: var(--color-bg-card);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+}
+
+.results-matrix {
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.results-matrix thead {
+    background-color: var(--color-bg-dark);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.results-matrix th {
+    padding: 8px 4px;
+    text-align: center;
+    border-bottom: 2px solid var(--color-primary);
+    font-weight: 600;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    height: auto;
+}
+
+.results-matrix tbody tr:nth-child(even) {
+    background-color: rgba(1, 157, 154, 0.05);
+}
+
+.results-matrix tbody tr:hover {
+    background-color: rgba(1, 157, 154, 0.15);
+}
+
+.results-matrix td {
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid var(--color-border);
+}
+
+/* Player Name Column */
+.player-name-cell {
+    background-color: var(--color-bg-dark);
+    font-weight: 600;
+    text-align: left;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    padding: 12px 15px;
+    white-space: nowrap;
+    min-width: 150px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.player-name-cell:hover {
+    background-color: var(--color-accent-cyan);
+    color: #1a1a2e;
+    font-weight: 700;
+}
+
+/* Game Header Column */
+.game-header-cell {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    padding: 8px 2px;
+    font-size: 0.6rem;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.game-header-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    margin-bottom: 2px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.team-logo {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.game-teams-text {
+    font-size: 0.55rem;
+    text-align: center;
+    line-height: 1;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Score Cell Styles */
+.score-cell {
+    font-weight: 600;
+    padding: 10px 4px;
+    border-radius: 4px;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+}
+
+/* Score Classifications - Vibrant Color Palette */
+.score-cell.perfect {
+    background-color: rgba(76, 175, 80, 0.5);
+    color: var(--color-accent-lime);
+    font-weight: 700;
+}
+
+.score-cell.high {
+    background-color: rgba(0, 229, 255, 0.3);
+    color: var(--color-accent-cyan);
+    font-weight: 700;
+}
+
+.score-cell.medium {
+    background-color: rgba(255, 235, 59, 0.3);
+    color: var(--color-accent-yellow);
+    font-weight: 700;
+}
+
+.score-cell.low {
+    background-color: rgba(255, 87, 34, 0.3);
+    color: var(--color-accent-orange);
+    font-weight: 700;
+}
+
+.score-cell.pending {
+    background-color: rgba(158, 158, 158, 0.2);
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+/* Game Info Tooltip */
+.game-info {
+    cursor: pointer;
+    position: relative;
+}
+
+.game-info:hover {
+    opacity: 0.7;
+}
+
+/* Summary Row */
+.summary-row {
+    background: linear-gradient(90deg, var(--color-accent-cyan) 0%, #00bcd4 100%);
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.summary-row td {
+    padding: 15px 8px;
+    border-color: var(--color-secondary);
+}
+
+/* ===================================
+   Loading & Empty States
+   =================================== */
+.loading-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ===================================
+   Legend Styles
+   =================================== */
+.legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.legend-color.perfect {
+    background-color: rgba(76, 175, 80, 0.3);
+    border: 1px solid #4caf50;
+}
+
+.legend-color.high {
+    background-color: rgba(1, 157, 154, 0.3);
+    border: 1px solid var(--color-secondary);
+}
+
+.legend-color.medium {
+    background-color: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+}
+
+.legend-color.low {
+    background-color: rgba(244, 67, 54, 0.2);
+    border: 1px solid #f44336;
+}
+
+.legend-color.pending {
+    background-color: rgba(155, 155, 155, 0.2);
+    border: 1px solid #9b9b9b;
+}
+
+/* ===================================
+   Player History Modal Styles
+   =================================== */
+.player-history-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.player-history-modal.active {
+    display: block;
+}
+
+.player-history-content {
+    background-color: var(--color-bg-card);
+    border-radius: 10px;
+    margin: 40px auto;
+    max-width: 900px;
+    padding: 30px;
+    min-height: 300px;
+    color: white;
+}
+
+.player-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.player-history-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.player-history-close:hover {
+    opacity: 0.7;
+}
+
+/* Player Stats Header Grid */
+.player-stats-header {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(118, 255, 3, 0.05) 100%);
+    border-left: 3px solid var(--color-accent-cyan);
+    border-radius: 4px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value.total-points {
+    color: var(--color-accent-lime);
+}
+
+.stat-value.perfect-scores {
+    color: var(--color-accent-cyan);
+}
+
+.stat-value.fechas-won {
+    color: var(--color-accent-yellow);
+}
+
+/* Player History Table */
+.player-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.player-history-table thead {
+    border-bottom: 2px solid var(--color-accent-cyan);
+    background-color: rgba(0, 229, 255, 0.1);
+}
+
+.player-history-table th {
+    padding: 10px;
+    text-align: left;
+    color: var(--color-accent-cyan);
+    font-weight: 600;
+}
+
+.player-history-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-history-match {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.player-history-prediction {
+    text-align: center;
+    color: var(--color-accent-yellow);
+}
+
+.player-history-result {
+    text-align: center;
+    color: var(--color-text-light);
+}
+
+.player-history-points {
+    text-align: center;
+    font-weight: 700;
+}
+
+.player-history-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 229, 255, 0.2);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* ===================================
+   Tooltip Styles
+   =================================== */
+.tooltip-container {
+    position: relative;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -50px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ===================================
+   Responsive Design
+   =================================== */
+@media (max-width: 768px) {
+    .game-header-cell {
+        font-size: 0.6rem;
+        max-width: 30px;
+        min-width: 30px;
+    }
+
+    .player-name-cell {
+        min-width: 120px;
+        font-size: 0.9rem;
+    }
+
+    .score-cell {
+        padding: 8px 4px;
+        min-width: 40px;
+        font-size: 0.85rem;
+    }
+
+    .results-matrix {
+        font-size: 0.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .player-history-content {
+        margin: 20px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .results-matrix-container {
+        padding: 10px;
+    }
+
+    .score-cell {
+        min-width: 35px;
+        padding: 6px 2px;
+        font-size: 0.75rem;
+    }
+
+    .team-logo {
+        width: 18px;
+        height: 18px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .player-history-content {
+        max-width: 100%;
+    }
+}
+
+/* ===================================
+   Player History Modal Styles
+   =================================== */
+
+.player-history-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.player-history-modal .modal-content {
+    background-color: #2a2f33;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.player-history-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #3a3f44;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(118, 255, 3, 0.05) 100%);
+}
+
+.player-history-modal .modal-header h3 {
+    margin: 0;
+    color: #f0f0f0;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.player-history-modal .close-modal {
+    color: #999;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.player-history-modal .close-modal:hover {
+    color: #fff;
+}
+
+.player-history-modal .modal-body {
+    padding: 20px;
+    color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .player-history-modal .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .player-history-modal .modal-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .player-history-modal {
+        padding: 10px;
+    }
+
+    .player-history-modal .modal-content {
+        margin: 20% auto;
+        width: 100%;
+    }
+
+    .player-history-modal .modal-header {
+        padding: 15px;
+    }
+
+    .player-history-modal .modal-body {
+        padding: 15px;
+    }
+}
