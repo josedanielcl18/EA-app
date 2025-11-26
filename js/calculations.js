@@ -298,7 +298,7 @@ function sortPlayersByStats(playerStats, predictions) {
  * Gets score classification for UI coloring
  * 
  * @param {number} points - Points earned (0-10)
- * @returns {string} Classification: 'perfect', 'high', 'medium', 'low', 'pending'
+ * @returns {string} Classification: 'perfect', 'high', 'medium', 'low', 'zero', 'pending'
  */
 function getScoreClass(points) {
   if (points === null || points === undefined) return 'pending';
@@ -306,7 +306,8 @@ function getScoreClass(points) {
   if (points >= 7) return 'high';
   if (points >= 4) return 'medium';
   if (points >= 1) return 'low';
-  return 'low';
+  if (points === 0) return 'zero';
+  return 'pending';
 }
 
 // ============================================

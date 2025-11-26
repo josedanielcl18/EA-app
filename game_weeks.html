@@ -86,7 +86,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { calculatePoints, calculatePlayerStats, getPlayerStats } from "./js/calculations.js";
+        import { calculatePoints, calculatePlayerStats, getPlayerStats, getScoreClass } from "./js/calculations.js";
         import { firebaseConfig } from "./js/firebase-config.js";
         import { createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers } from "./js/ui-helpers.js";
 
@@ -95,6 +95,8 @@
 
         // Store user display names globally
         let userDisplayNamesGlobal = {};
+        // Store overall player stats (totalPoints across all game weeks)
+        let overallPlayerStats = {};
 
         // Create player history modal on page load
         createPlayerHistoryModal();
@@ -121,15 +123,6 @@
         let allTeams = {};
         let currentMatrixGames = null;
         let currentMatrixPredictions = null;
-
-        function getScoreClass(points) {
-            if (points === null || points === undefined) return 'pending';
-            if (points === 10) return 'perfect';
-            if (points >= 7) return 'high';
-            if (points >= 4) return 'medium';
-            if (points >= 1) return 'low';
-            return 'low';
-        }
 
         // Load available game weeks
         async function loadGameWeeks() {
@@ -160,6 +153,9 @@
                     allTeams[doc.data().name] = doc.data();
                 });
 
+                // Load overall player stats from ALL games
+                await loadOverallPlayerStats(gamesSnapshot);
+
                 if (gameWeeksList.length === 0) {
                     matrixContainer.innerHTML = '<p class="empty-message">No game weeks found.</p>';
                     return;
@@ -171,6 +167,32 @@
             } catch (error) {
                 console.error("Error loading game weeks: ", error);
                 matrixContainer.innerHTML = '<p class="empty-message" style="color: red;">Error loading game weeks. Please try again later.</p>';
+            }
+        }
+
+        // Load overall player stats across all games
+        async function loadOverallPlayerStats(allGamesSnapshot) {
+            try {
+                const allGames = [];
+                allGamesSnapshot.forEach(doc => {
+                    const gameData = doc.data();
+                    gameData.id = doc.id;
+                    allGames.push(gameData);
+                });
+
+                // Fetch ALL predictions
+                const predictionsRef = collection(db, 'predictions');
+                const allPredictions = [];
+                const predSnapshot = await getDocs(predictionsRef);
+                predSnapshot.forEach(doc => {
+                    allPredictions.push(doc.data());
+                });
+
+                // Calculate overall stats using the calculations module
+                overallPlayerStats = calculatePlayerStats(allGames, allPredictions);
+            } catch (error) {
+                console.error("Error loading overall player stats: ", error);
+                overallPlayerStats = {};
             }
         }
 
@@ -333,8 +355,21 @@
                 };
             });
 
-            // Get unique players (userIds)
-            const players = Object.keys(matrixData).sort();
+            // Get unique players and sort by Total GW (sum of points for current game week) in descending order
+            const players = Object.keys(matrixData).sort((userIdA, userIdB) => {
+                let totalA = 0;
+                let totalB = 0;
+                
+                games.forEach(game => {
+                    const dataA = matrixData[userIdA] && matrixData[userIdA][game.id];
+                    const dataB = matrixData[userIdB] && matrixData[userIdB][game.id];
+                    
+                    if (dataA && dataA.points !== null) totalA += dataA.points;
+                    if (dataB && dataB.points !== null) totalB += dataB.points;
+                });
+                
+                return totalB - totalA; // Descending order
+            });
             // Render HTML table
             let html = `
                 <div class="results-matrix-container">
@@ -359,7 +394,7 @@
                                     
                                     return `
                                         <th class="game-header-cell">
-                                            <div style="font-size: 0.5rem; color: #00e5ff; margin-bottom: 2px; font-weight: 600;">${kickOffDisplay}</div>
+                                            <div style="font-size: 0.7rem; color: #666; margin-bottom: 2px; font-weight: 600;">${kickOffDisplay}</div>
                                             <div class="game-header-logos">
                                                 ${homeLogoUrl ? `<div class="team-logo" style="background-image: url('${homeLogoUrl}');"></div>` : `<div style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.65rem; background-color: rgba(1, 157, 154, 0.4); border-radius: 50%; color: #3fc1c9; flex-shrink: 0;">${game.homeTeam.substring(0, 2).toUpperCase()}</div>`}
                                                 <span style="font-size: 0.5rem; opacity: 0.4; margin: 0 1px;">-</span>
@@ -371,7 +406,8 @@
                                         </th>
                                     `;
                                 }).join('')}
-                                <th>Total</th>
+                                <th>Total GW</th>
+                                <th>Total All</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -416,8 +452,11 @@
                 });
 
                 html += `
-                    <td class="score-cell" style="background-color: rgba(1, 157, 154, 0.3); font-weight: bold; min-width: 80px;">
+                    <td class="score-cell total-cell" style="background-color: #f5f5f5; font-weight: bold;">
                         ${playerTotal}
+                    </td>
+                    <td class="score-cell total-cell" style="background-color: #f5f5f5; font-weight: bold;">
+                        ${overallPlayerStats[userId]?.totalPoints || 0}
                     </td>
                     </tr>
                 `;

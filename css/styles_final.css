@@ -101,11 +101,11 @@
 }
 
 .prediction-entry .score.low {
-    color: #ff6b6b !important; /* Red for low scores */
+    color: #ff1751 !important; /* Red for low scores */
 }
 
 .prediction-entry .score.zero {
-    color: #6c757d !important; /* Gray for no points */
+    color: #80072d !important; /* Burgundy for zero points */
 }
 
 .prediction-entry .actual-result {
@@ -192,11 +192,13 @@
 
 /* Results Matrix Container */
 .results-matrix-container {
-    background-color: var(--color-bg-card);
-    border-radius: 10px;
-    padding: 20px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0;
     margin-bottom: 30px;
-    overflow-x: auto;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .results-matrix {
@@ -206,55 +208,74 @@
 }
 
 .results-matrix thead {
-    background-color: var(--color-bg-dark);
+    background-color: #f5f5f5;
     position: sticky;
     top: 0;
     z-index: 10;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .results-matrix th {
-    padding: 8px 4px;
+    padding: 10px 6px;
     text-align: center;
-    border-bottom: 2px solid var(--color-primary);
+    border: none;
     font-weight: 600;
     width: 80px;
     min-width: 80px;
     max-width: 80px;
     height: auto;
+    color: #333;
+    font-size: 0.8rem;
 }
 
 .results-matrix tbody tr:nth-child(even) {
-    background-color: rgba(1, 157, 154, 0.05);
+    background-color: #f9f9f9;
+}
+
+.results-matrix tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.results-matrix tbody tr {
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .results-matrix tbody tr:hover {
-    background-color: rgba(1, 157, 154, 0.15);
+    background-color: #f0f0f0;
 }
 
 .results-matrix td {
-    padding: 12px 8px;
+    padding: 10px 4px;
     text-align: center;
-    border: 1px solid var(--color-border);
+    border: none;
+    vertical-align: middle;
 }
 
 /* Player Name Column */
 .player-name-cell {
-    background-color: var(--color-bg-dark);
+    background-color: #f5f5f5;
     font-weight: 600;
     text-align: left;
     position: sticky;
     left: 0;
     z-index: 5;
-    padding: 12px 15px;
+    padding: 14px 16px;
     white-space: nowrap;
     min-width: 150px;
     cursor: pointer;
     transition: all 0.2s ease;
+    color: #333;
+    border-right: 1px solid #e0e0e0;
+}
+
+.results-matrix tbody tr:nth-child(even) .player-name-cell {
+    background-color: #f9f9f9;
 }
 
 .player-name-cell:hover {
-    background-color: var(--color-accent-cyan);
-    color: #1a1a2e;
+    background-color: #efefef;
+    color: #000;
     font-weight: 700;
 }
 
@@ -263,35 +284,36 @@
     width: 80px;
     min-width: 80px;
     max-width: 80px;
-    padding: 8px 2px;
-    font-size: 0.6rem;
+    padding: 10px 4px;
+    font-size: 0.75rem;
     text-align: center;
     vertical-align: middle;
     overflow: hidden;
+    color: #666;
 }
 
 .game-header-logos {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1px;
-    margin-bottom: 2px;
-    height: 26px;
+    gap: 2px;
+    margin-bottom: 3px;
+    height: 28px;
     flex-shrink: 0;
 }
 
 .team-logo {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .game-teams-text {
-    font-size: 0.55rem;
+    font-size: 1.0rem;
     text-align: center;
     line-height: 1;
     white-space: normal;
@@ -299,44 +321,72 @@
 }
 
 /* Score Cell Styles */
-.score-cell {
+.results-matrix tbody td.score-cell {
     font-weight: 600;
-    padding: 10px 4px;
-    border-radius: 4px;
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
+    padding: 4px 3px !important;
+    border-radius: 2px;
+    width: 45px !important;
+    min-width: 45px !important;
+    font-size: 0.75rem;
+    letter-spacing: 0px;
+    box-shadow: none;
+    border-right: 2px solid #f0f0f0;
+    position: relative;
+}
+
+/* Total Cell Override */
+.results-matrix tbody td.total-cell {
+    width: auto !important;
+    min-width: 70px !important;
+    background-color: #f5f5f5 !important;
+    padding: 10px !important;
+    color: #333 !important;
 }
 
 /* Score Classifications - Vibrant Color Palette */
 .score-cell.perfect {
-    background-color: rgba(76, 175, 80, 0.5);
-    color: var(--color-accent-lime);
+    background-color: #375523;
+    color: #fff;
     font-weight: 700;
 }
 
 .score-cell.high {
-    background-color: rgba(0, 229, 255, 0.3);
-    color: var(--color-accent-cyan);
+    background-color: #01fc7a;
+    color: #000;
     font-weight: 700;
 }
 
 .score-cell.medium {
-    background-color: rgba(255, 235, 59, 0.3);
-    color: var(--color-accent-yellow);
+    background-color: #e7e7e7;
+    color: #000;
     font-weight: 700;
 }
 
 .score-cell.low {
-    background-color: rgba(255, 87, 34, 0.3);
-    color: var(--color-accent-orange);
+    background-color: #ff1751;
+    color: #fff;
+    font-weight: 700;
+}
+
+.score-cell.zero {
+    background-color: #80072d;
+    color: #fff;
     font-weight: 700;
 }
 
 .score-cell.pending {
-    background-color: rgba(158, 158, 158, 0.2);
-    color: var(--color-text-light);
+    background-color: #e0e0e0;
+    color: #666;
     font-style: italic;
+    box-shadow: none;
+}
+
+/* Total Column - Override inline styles */
+.results-matrix tbody td:last-child {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+    min-width: 70px;
 }
 
 /* Game Info Tooltip */
@@ -614,7 +664,7 @@
 
     .player-name-cell {
         min-width: 120px;
-        font-size: 0.9rem;
+        font-size: 1.0rem;
     }
 
     .score-cell {
