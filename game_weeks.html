@@ -231,6 +231,11 @@
             }
         };
 
+        // Check if any games in current game week have started (not upcoming)
+        function hasStartedGames(games) {
+            return games && games.some(game => game.status !== 'upcoming');
+        }
+
         function renderMatrix() {
             if (currentMatrixGames && currentMatrixPredictions) {
                 renderMatrixWithData(currentMatrixGames, currentMatrixPredictions);
@@ -333,6 +338,19 @@
                 currentMatrixGames = gamesFormatted;
                 currentMatrixPredictions = predictionsWithScores;
 
+                // Reset predictions visibility if all games are still upcoming
+                if (!hasStartedGames(gamesFormatted)) {
+                    showPredictions = false;
+                    document.getElementById('toggle-predictions-btn').textContent = '👁️ Show Predictions';
+                    document.getElementById('toggle-predictions-btn').disabled = true;
+                    document.getElementById('toggle-predictions-btn').style.opacity = '0.5';
+                    document.getElementById('toggle-predictions-btn').title = 'Predictions available after game starts';
+                } else {
+                    document.getElementById('toggle-predictions-btn').disabled = false;
+                    document.getElementById('toggle-predictions-btn').style.opacity = '1';
+                    document.getElementById('toggle-predictions-btn').title = '';
+                }
+
                 renderMatrixWithData(gamesFormatted, predictionsWithScores);
 
             } catch (error) {
@@ -430,7 +448,8 @@
                     const pointsDisplay = points === null ? '—' : points;
 
                     let scoreContent = pointsDisplay;
-                    if (showPredictions && prediction) {
+                    // Only show predictions if game has started (not upcoming) and predictions are toggled on
+                    if (showPredictions && prediction && game.status !== 'upcoming') {
                         const pred = `${prediction.predictedHomeScore}-${prediction.predictedAwayScore}`;
                         const actual = game.status === 'finished' && game.homeScore !== null ? `${game.homeScore}-${game.awayScore}` : '?-?';
                         scoreContent = `
@@ -440,8 +459,8 @@
                     }
 
                     html += `
-                        <td class="score-cell ${scoreClass} ${showPredictions && prediction ? 'with-prediction' : ''} tooltip-container">
-                            ${showPredictions && prediction ? scoreContent : pointsDisplay}
+                        <td class="score-cell ${scoreClass} ${showPredictions && prediction && game.status !== 'upcoming' ? 'with-prediction' : ''} tooltip-container">
+                            ${showPredictions && prediction && game.status !== 'upcoming' ? scoreContent : pointsDisplay}
                             ${points !== null ? `<span class="tooltip-text">${points} points</span>` : ''}
                         </td>
                     `;
