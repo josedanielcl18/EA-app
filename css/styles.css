@@ -15,6 +15,36 @@
     --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.1); /* Consistent subtle shadow */
 }
 
+/* ===================================
+   Game Week Selector (from styles_final.css)
+   =================================== */
+.gameweek-selector {
+    margin-bottom: 30px;
+}
+
+.gameweek-button {
+    margin: 5px;
+    font-weight: 600;
+    background-color: #1a1d26;
+    border: 1px solid var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gameweek-button:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.gameweek-button.active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
 /* -------------------------HTML Tags -------------------------*/
 body, html {
     background-color: var(--light-bg-color-1); /* Using variable */
