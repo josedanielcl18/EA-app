@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixtures - EA Predictor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles_final.css">
+</head>
+<body class="bg-dark text-white">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">EA Predictor</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="leaderboard.html">Leaderboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="game_weeks.html">Points</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="fixtures.html">Fixtures <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Upcoming & Recent Games</h1>
+        <p class="text-center text-muted mb-4">View all upcoming fixtures and results</p>
+
+        <!-- Game Week Selector -->
+        <div id="fixtures-gameweek-selector" class="gameweek-selector text-center mb-4" style="display: none;">
+            <h5 class="mb-3">Filter by Game Week:</h5>
+            <div id="fixtures-gameweek-buttons"></div>
+        </div>
+
+        <!-- Games List -->
+        <div id="game-list" class="game-list">
+            <p class="loading-message">Loading games...</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { firebaseConfig } from "./js/firebase-config.js";
+        import { createGameWeekSelector, updateGameWeekSelectorState } from "./js/ui-helpers.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // State
+        let allGames = [];
+        let selectedGameWeek = null;
+        let allTeams = {};
+
+        const gameListDiv = document.getElementById('game-list');
+        const fixturesGameweekSelector = document.getElementById('fixtures-gameweek-selector');
+        const fixturesGameweekButtons = document.getElementById('fixtures-gameweek-buttons');
+
+        // Load teams first
+        async function loadTeams() {
+            try {
+                const teamsSnapshot = await getDocs(collection(db, 'teams'));
+                allTeams = {};
+                teamsSnapshot.forEach(doc => {
+                    const team = doc.data();
+                    allTeams[team.name] = team;
+                });
+            } catch (error) {
+                console.error("Error loading teams: ", error);
+            }
+        }
+
+        // Load all games
+        async function loadGames() {
+            gameListDiv.innerHTML = '<p class="loading-message">Loading games...</p>';
+
+            try {
+                const gamesRef = collection(db, 'games');
+                const q = query(gamesRef, orderBy('KickOffTime', 'asc'));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    gameListDiv.innerHTML = '<p>No games found.</p>';
+                    return;
+                }
+
+                // Store all games
+                allGames = [];
+                snapshot.forEach(doc => {
+                    allGames.push(doc.data());
+                });
+
+                // Extract unique game weeks
+                const gameWeeksSet = new Set();
+                allGames.forEach(game => {
+                    if (game.Fecha) {
+                        gameWeeksSet.add(game.Fecha);
+                    }
+                });
+
+                const gameWeeksList = Array.from(gameWeeksSet).sort((a, b) => {
+                    const numA = parseInt(a.replace('GW', ''));
+                    const numB = parseInt(b.replace('GW', ''));
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    }
+                    return a.localeCompare(b);
+                });
+
+                // Show selector if multiple weeks
+                if (gameWeeksList.length > 1) {
+                    fixturesGameweekSelector.style.display = 'block';
+                    // Select the latest game week by default
+                    selectedGameWeek = gameWeeksList[gameWeeksList.length - 1];
+                    
+                    createGameWeekSelector(
+                        gameWeeksList,
+                        (gameWeek) => {
+                            selectedGameWeek = gameWeek;
+                            updateGameWeekSelectorState('fixtures-gameweek-buttons', gameWeek);
+                            displayFilteredGames();
+                        },
+                        'fixtures-gameweek-buttons',
+                        gameWeeksList[gameWeeksList.length - 1],
+                        'fixturesGameWeekSelector'
+                    );
+                } else if (gameWeeksList.length === 1) {
+                    fixturesGameweekSelector.style.display = 'none';
+                    selectedGameWeek = gameWeeksList[0];
+                }
+
+                displayFilteredGames();
+
+            } catch (error) {
+                console.error("Error loading games: ", error);
+                gameListDiv.innerHTML = '<p>Error loading games. Please try again.</p>';
+            }
+        }
+
+        // Display filtered games
+        function displayFilteredGames() {
+            const filteredGames = selectedGameWeek
+                ? allGames.filter(game => game.Fecha === selectedGameWeek)
+                : allGames;
+
+            if (filteredGames.length === 0) {
+                gameListDiv.innerHTML = '<p class="text-center">No games for this week.</p>';
+                return;
+            }
+
+            gameListDiv.innerHTML = '';
+
+            filteredGames.forEach(game => {
+                const homeTeamData = allTeams[game.HomeTeam] || {};
+                const awayTeamData = allTeams[game.AwayTeam] || {};
+                const homeLogoUrl = homeTeamData.logoUrl || '';
+                const awayLogoUrl = awayTeamData.logoUrl || '';
+
+                let statusClass = game.Status ? game.Status.toLowerCase() : '';
+                let scoreDisplay = '';
+                if (game.Status && game.Status.toLowerCase() === 'finished') {
+                    const homeScore = game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?';
+                    const awayScore = game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?';
+                    scoreDisplay = `<p><strong>Result:</strong> ${homeScore} - ${awayScore}</p>`;
+                }
+
+                const gameCard = document.createElement('div');
+                gameCard.classList.add('app-card', 'game-card');
+
+                gameCard.innerHTML = `
+                    <div class="teams-row">
+                        <div class="team">
+                            ${homeLogoUrl ? `<img src="${homeLogoUrl}" alt="${game.HomeTeam} Logo" class="team-logo">` : '<div class="team-logo-placeholder">-</div>'}
+                            <p class="team-name">${game.HomeTeam}</p>
+                        </div>
+                        <div class="vs-separator">vs</div>
+                        <div class="team">
+                            ${awayLogoUrl ? `<img src="${awayLogoUrl}" alt="${game.AwayTeam} Logo" class="team-logo">` : '<div class="team-logo-placeholder">-</div>'}
+                            <p class="team-name">${game.AwayTeam}</p>
+                        </div>
+                    </div>
+                    <p><strong>League:</strong> ${game.League || 'N/A'}</p>
+                    <p><strong>Fecha:</strong> ${game.Fecha || 'N/A'}</p> 
+                    <p><strong>Kick-off:</strong> ${new Date(game.KickOffTime).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }) || 'N/A'}</p>
+                    <p><strong>Status:</strong> <span class="status ${statusClass}">${game.Status || 'N/A'}</span></p>
+                    ${scoreDisplay}
+                `;
+                gameListDiv.appendChild(gameCard);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadTeams();
+            await loadGames();
+        });
+    </script>
+
+</body>
+</html>

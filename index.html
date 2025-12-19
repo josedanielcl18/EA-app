@@ -43,7 +43,10 @@
                         <a class="nav-link" href="leaderboard.html">Leaderboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="game_weeks.html">Game Weeks</a>
+                        <a class="nav-link" href="game_weeks.html">Points</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="fixtures.html">Fixtures</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#auth-ui">Iniciar sesión</a>
@@ -125,12 +128,6 @@
                 <p id="message" style="color: green; font-weight: bold; margin-top: 15px;"></p>
             </div>
 
-            <section id="game-prediction-section" class="py-5"> <div class="container"> <hr class="my-5"> 
-                    <h2 class="section-heading">Upcoming & Recent Games</h2> <div id="game-list" class="game-list">
-                        <p class="loading-message">Loading games...</p> </div>
-                </div>
-            </section>
-
             <hr class="my-5"> 
             
             <div id="admin-game-form-section" class="app-card prediction-section" style="display: none;">
@@ -176,6 +173,11 @@
         </div>
         
         <div id="my-predictions-section" class="prediction-section" style="display: none;"> <h2 class="section-heading">My Submitted Predictions</h2>
+            <!-- Game Week Selector for My Predictions -->
+            <div id="my-predictions-gameweek-selector" class="gameweek-selector text-center mb-4" style="display: none;">
+                <h5 class="mb-3">Filter by Game Week:</h5>
+                <div id="my-predictions-gameweek-buttons"></div>
+            </div>
             <div id="my-predictions-list" class="game-list">
                 <p class="text-center">No predictions submitted yet.</p>
             </div>
@@ -460,104 +462,44 @@
 
         // --- Game Loading and Prediction Submission (Modified) ---
         async function loadGames() {
-            const gameListDiv = document.getElementById('game-list');
             const predictionFormGamesDiv = document.getElementById('prediction-form-games');
 
-            gameListDiv.innerHTML = 'Loading games...'; // Show loading message for main game list
-            predictionFormGamesDiv.innerHTML = 'Loading games for prediction...'; // Show loading message for prediction section
+            predictionFormGamesDiv.innerHTML = 'Loading games for prediction...';
 
             try {
                 // Create a quick lookup map for team logos from the globally populated 'allTeams'
-                // 'allTeams' MUST be populated by populateAdminDropdowns() BEFORE loadGames() is called.
                 const teamLogoMap = new Map();
                 allTeams.forEach(team => {
-                    // Ensure team.name and team.logoUrl exist before mapping
                     if (team.name && team.logoUrl) {
                         teamLogoMap.set(team.name, team.logoUrl);
                     }
                 });
-                console.log("Team Logo Map created:", teamLogoMap); // Debugging: Check what's in your map
 
                 const gamesRef = collection(db, 'games');
-                // Order by KickOffTime ascending for upcoming games to appear first.
-                const q = query(gamesRef, orderBy('KickOffTime', 'asc')); // Adjust limit as needed
+                const q = query(gamesRef, orderBy('KickOffTime', 'asc'));
                 const snapshot = await getDocs(q);
 
                 if (snapshot.empty) {
-                    gameListDiv.innerHTML = '<p>No games found in the database.</p>';
                     predictionFormGamesDiv.innerHTML = '<p>No games available for prediction.</p>';
-                    setPredictionFormEnabled(false); // Assuming this function disables the prediction form
+                    setPredictionFormEnabled(false);
                     return;
                 }
 
-                gameListDiv.innerHTML = ''; // Clear loading message
                 predictionFormGamesDiv.innerHTML = '';
-                gamesForPrediction = []; // Reset for new load (assuming gamesForPrediction is global)
+                gamesForPrediction = [];
 
                 snapshot.forEach(doc => {
                     const game = doc.data();
-                    const gameId = doc.id; // Get the document ID for linking predictions
+                    const gameId = doc.id;
 
-                    console.log("Processing game:", game); // Debugging: Check the raw game data from Firestore
-                    console.log("Home Team Name from game:", game.HomeTeam, "Away Team Name from game:", game.AwayTeam); // Debugging: Check names exactly as they are in game document
-
-                    // Get logo URLs using the map.
-                    // IMPORTANT: Replace 'path/to/default_logo.png' with the actual path to your default logo file,
-                    // or a publicly accessible URL if you don't have a local default.
                     const homeTeamLogo = teamLogoMap.get(game.HomeTeam) || 'path/to/default_logo.png';
                     const awayTeamLogo = teamLogoMap.get(game.AwayTeam) || 'path/to/default_logo.png';
-
-                    console.log("Resolved Home Team Logo URL:", homeTeamLogo); // Debugging: See what URL is actually being used
-                    console.log("Resolved Away Team Logo URL:", awayTeamLogo); // Debugging: See what URL is actually being used
-
-                    // Display games in the main game list
-                    const gameCard = document.createElement('div');
-                    gameCard.classList.add('app-card', 'game-card'); // Ensure you have CSS for these classes
-
-                    // Determine status class for styling
-                    let statusClass = game.Status ? game.Status.toLowerCase() : '';
-                    if (statusClass === 'upcoming') {
-                        statusClass = 'upcoming';
-                    } else if (statusClass === 'finished') {
-                        statusClass = 'finished';
-                    } else {
-                        statusClass = ''; // Default or unknown status
-                    }
-
-                    // Prepare score display for finished games
-                    let scoreDisplay = '';
-                    if (game.Status && game.Status.toLowerCase() === 'finished') {
-                        const homeScore = game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?';
-                        const awayScore = game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?';
-                        scoreDisplay = `<p><strong>Result:</strong> ${homeScore} - ${awayScore}</p>`;
-                    }
-
-                    gameCard.innerHTML = `
-                        <div class="teams-row">
-                            <div class="team">
-                                <img src="${homeTeamLogo}" alt="${game.HomeTeam} Logo" class="team-logo">
-                                <p class="team-name">${game.HomeTeam}</p>
-                            </div>
-                            <div class="vs-separator">vs</div>
-                            <div class="team">
-                                <img src="${awayTeamLogo}" alt="${game.AwayTeam} Logo" class="team-logo">
-                                <p class="team-name">${game.AwayTeam}</p>
-                            </div>
-                        </div>
-                        <p><strong>League:</strong> ${game.League || 'N/A'}</p>
-                        <p><strong>Fecha:</strong> ${game.Fecha || 'N/A'}</p> 
-                        <p><strong>Kick-off:</strong> ${new Date(game.KickOffTime).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }) || 'N/A'}</p>
-                        <p><strong>Status:</strong> <span class="status ${statusClass}">${game.Status || 'N/A'}</span></p>
-                        ${scoreDisplay}
-                    `;
-                    gameListDiv.appendChild(gameCard);
 
                     // Populate prediction form for upcoming games only
                     if (game.Status && game.Status.toLowerCase() === 'upcoming') {
                         const predictionGameCard = document.createElement('div');
-                        predictionGameCard.classList.add('app-card', 'prediction-game-card'); // Ensure you have CSS for these classes
+                        predictionGameCard.classList.add('app-card', 'prediction-game-card');
                         
-                        // HTML for the prediction form game card
                         predictionGameCard.innerHTML = `
                             <div class="teams-row">
                                 <div class="team">
@@ -578,24 +520,21 @@
                             </div>                     
                         `;
                         predictionFormGamesDiv.appendChild(predictionGameCard);
-                        gamesForPrediction.push({ id: gameId, ...game }); // Store upcoming games with their Firestore ID
+                        gamesForPrediction.push({ id: gameId, ...game });
                     }
                 });
 
-                // Initial state of prediction form based on whether there are games to predict
                 if (gamesForPrediction.length === 0) {
-                    setPredictionFormEnabled(false); // Assuming this function disables the prediction form
+                    setPredictionFormEnabled(false);
                     predictionFormGamesDiv.innerHTML = '<p>No upcoming games to predict.</p>';
                 } else {
-                    // This will be overridden by onAuthStateChanged if user is not signed in
-                    setPredictionFormEnabled(!!currentUserId); // Enable only if user is already signed in (assuming currentUserId is global)
+                    setPredictionFormEnabled(!!currentUserId);
                 }
 
             } catch (error) {
                 console.error("Error fetching games: ", error);
-                gameListDiv.innerHTML = '<p>Error loading games. Please check the console for details.</p>';
                 predictionFormGamesDiv.innerHTML = '<p>Error loading games for prediction.</p>';
-                setPredictionFormEnabled(false); // Disable if error
+                setPredictionFormEnabled(false);
             }
         }
 
@@ -705,6 +644,12 @@
         }
 
         // --- New Function: Load and Display My Predictions ---
+        // Global variables for My Predictions filtering
+        let allUserPredictions = [];
+        let gamesMapForPredictions = new Map();
+        let selectedMyPredictionsGameWeek = null;
+        const myPredictionsGameweekSelector = document.getElementById('my-predictions-gameweek-selector');
+
         async function loadMyPredictions() {
             if (!currentUserId) {
                 myPredictionsList.innerHTML = '<p class="text-center">Please sign in to see your predictions.</p>';
@@ -720,49 +665,110 @@
 
                 if (snapshot.empty) {
                     myPredictionsList.innerHTML = '<p class="text-center">You have not submitted any predictions yet.</p>';
+                    myPredictionsGameweekSelector.style.display = 'none';
                     return;
                 }
 
-                myPredictionsList.innerHTML = ''; // Clear loading message
+                // Store all user's predictions
+                allUserPredictions = [];
+                snapshot.forEach(predictionDoc => {
+                    allUserPredictions.push(predictionDoc.data());
+                });
 
-                // Fetch all game data once to avoid repeated calls in the loop
-                const gamesMap = new Map();
+                // Fetch all game data once
+                gamesMapForPredictions = new Map();
                 const gamesSnapshot = await getDocs(collection(db, 'games'));
                 gamesSnapshot.forEach(doc => {
-                    gamesMap.set(doc.id, doc.data());
+                    gamesMapForPredictions.set(doc.id, doc.data());
                 });
 
-
-                snapshot.forEach(predictionDoc => {
-                    const prediction = predictionDoc.data();
-                    const gameId = prediction.gameId;
-                    const game = gamesMap.get(gameId); // Get game details from our map
-
-                    if (game) {
-                        const predictionCard = document.createElement('div');
-                        predictionCard.classList.add('app-card','game-card'); // Reuse game-card style
-
-                        // Format timestamp for display
-                        const predictionTime = prediction.timestamp ? new Date(prediction.timestamp.toDate()).toLocaleString() : 'N/A';
-
-
-                        predictionCard.innerHTML = `
-                            <h3>${game.HomeTeam} vs ${game.AwayTeam}</h3>
-                            <p><strong>Your Prediction:</strong> ${prediction.predictedHomeScore} - ${prediction.predictedAwayScore}</p>
-                            <p><strong>Game Status:</strong> <span class="status ${game.Status ? game.Status.toLowerCase() : ''}">${game.Status || 'N/A'}</span></p>
-                            ${game.Status && game.Status.toLowerCase() === 'finished' ? `<p><strong>Actual Result:</strong> ${game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?'} - ${game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?'}</p>` : ''}
-                            <p><small>Submitted: ${predictionTime}</small></p>
-                        `;
-                        myPredictionsList.appendChild(predictionCard);
-                    } else {
-                        console.warn(`Game details not found for gameId: ${gameId} in prediction ${predictionDoc.id}`);
+                // Extract unique game weeks from user's predictions
+                const gameWeeksSet = new Set();
+                allUserPredictions.forEach(pred => {
+                    const game = gamesMapForPredictions.get(pred.gameId);
+                    if (game && game.Fecha) {
+                        gameWeeksSet.add(game.Fecha);
                     }
                 });
+
+                const gameWeeksList = Array.from(gameWeeksSet).sort((a, b) => {
+                    const numA = parseInt(a.replace('GW', ''));
+                    const numB = parseInt(b.replace('GW', ''));
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    }
+                    return a.localeCompare(b);
+                });
+
+                // Show game week selector only if there are multiple weeks
+                if (gameWeeksList.length > 1) {
+                    myPredictionsGameweekSelector.style.display = 'block';
+                    // Select the latest game week by default
+                    selectedMyPredictionsGameWeek = gameWeeksList[gameWeeksList.length - 1];
+                    
+                    // Import the helper functions
+                    const { createGameWeekSelector, updateGameWeekSelectorState } = await import('./js/ui-helpers.js');
+                    
+                    createGameWeekSelector(
+                        gameWeeksList,
+                        (gameWeek) => {
+                            selectedMyPredictionsGameWeek = gameWeek;
+                            updateGameWeekSelectorState('my-predictions-gameweek-buttons', gameWeek);
+                            displayFilteredMyPredictions();
+                        },
+                        'my-predictions-gameweek-buttons',
+                        gameWeeksList[gameWeeksList.length - 1],
+                        'myPredictionsGameWeekSelector'
+                    );
+                } else if (gameWeeksList.length === 1) {
+                    myPredictionsGameweekSelector.style.display = 'none';
+                    selectedMyPredictionsGameWeek = gameWeeksList[0];
+                }
+
+                displayFilteredMyPredictions();
 
             } catch (error) {
                 console.error("Error loading user predictions: ", error);
                 myPredictionsList.innerHTML = '<p class="text-center" style="color: red;">Error loading your predictions. Please try again later.</p>';
             }
+        }
+
+        // Display filtered My Predictions based on selected game week
+        function displayFilteredMyPredictions() {
+            const filteredPredictions = selectedMyPredictionsGameWeek
+                ? allUserPredictions.filter(pred => {
+                    const game = gamesMapForPredictions.get(pred.gameId);
+                    return game && game.Fecha === selectedMyPredictionsGameWeek;
+                })
+                : allUserPredictions;
+
+            if (filteredPredictions.length === 0) {
+                myPredictionsList.innerHTML = '<p class="text-center">No predictions for this game week.</p>';
+                return;
+            }
+
+            myPredictionsList.innerHTML = '';
+
+            filteredPredictions.forEach(prediction => {
+                const gameId = prediction.gameId;
+                const game = gamesMapForPredictions.get(gameId);
+
+                if (game) {
+                    const predictionCard = document.createElement('div');
+                    predictionCard.classList.add('app-card','game-card');
+
+                    const predictionTime = prediction.timestamp ? new Date(prediction.timestamp.toDate()).toLocaleString() : 'N/A';
+
+                    predictionCard.innerHTML = `
+                        <h3>${game.HomeTeam} vs ${game.AwayTeam}</h3>
+                        <p><strong>Your Prediction:</strong> ${prediction.predictedHomeScore} - ${prediction.predictedAwayScore}</p>
+                        <p><strong>Game Status:</strong> <span class="status ${game.Status ? game.Status.toLowerCase() : ''}">${game.Status || 'N/A'}</span></p>
+                        ${game.Status && game.Status.toLowerCase() === 'finished' ? `<p><strong>Actual Result:</strong> ${game.HomeScore !== null && game.HomeScore !== undefined ? game.HomeScore : '?'} - ${game.AwayScore !== null && game.AwayScore !== undefined ? game.AwayScore : '?'}</p>` : ''}
+                        <p><small>Submitted: ${predictionTime}</small></p>
+                    `;
+                    myPredictionsList.appendChild(predictionCard);
+                }
+            });
         }
 
         // This function populates both home and away team dropdowns with optgroups

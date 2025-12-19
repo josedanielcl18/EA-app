@@ -23,7 +23,10 @@
                     <a class="nav-link" href="leaderboard.html">Leaderboard</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="game_weeks.html">Game Weeks <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="game_weeks.html">Points <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="fixtures.html">Fixtures</a>
                 </li>
             </ul>
         </div>
@@ -35,7 +38,6 @@
 
         <!-- Game Week Selector -->
         <div class="gameweek-selector text-center">
-            <h5 class="mb-3">Select Game Week:</h5>
             <div id="gameweek-buttons">
                 <p class="text-muted">Loading game weeks...</p>
             </div>
@@ -162,7 +164,7 @@
                 }
 
                 renderGameWeekButtons();
-                selectGameWeek(gameWeeksList[0]);
+                selectGameWeek(gameWeeksList[gameWeeksList.length - 1]);
 
             } catch (error) {
                 console.error("Error loading game weeks: ", error);

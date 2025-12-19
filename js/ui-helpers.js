@@ -278,3 +278,70 @@ export function setupPlayerClickHandlers(callback) {
         }
     });
 }
+
+/**
+ * Create a game week selector UI component with isolated namespace
+ * @param {array} gameWeeksList - Array of game week strings (e.g., ['GW1', 'GW2'])
+ * @param {function} onSelectGameWeek - Callback function when a game week is selected
+ * @param {string} containerId - ID of the container where buttons will be rendered
+ * @param {string} selectedGameWeek - Currently selected game week (optional)
+ * @param {string} callbackNamespace - Optional namespace to avoid conflicts (default: 'gameWeekCallback')
+ */
+export function createGameWeekSelector(gameWeeksList, onSelectGameWeek, containerId, selectedGameWeek = null, callbackNamespace = 'gameWeekCallback') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container with ID "${containerId}" not found.`);
+        return;
+    }
+
+    // Create a unique namespace for this selector to avoid conflicts
+    if (!window.gameWeekSelectors) {
+        window.gameWeekSelectors = {};
+    }
+    window.gameWeekSelectors[callbackNamespace] = onSelectGameWeek;
+
+    container.innerHTML = gameWeeksList.map(gw => `
+        <button class="btn btn-outline-secondary gameweek-button" 
+                onclick="window.gameWeekSelectors['${callbackNamespace}']('${gw}')" 
+                data-gameweek="${gw}">
+            ${gw}
+        </button>
+    `).join('');
+
+    // Apply active state to the selected game week
+    if (selectedGameWeek) {
+        updateGameWeekSelectorState(containerId, selectedGameWeek);
+    }
+}
+
+/**
+ * Update game week selector active state
+ * @param {string} containerId - ID of the container with game week buttons
+ * @param {string} selectedGameWeek - Game week to mark as active
+ */
+export function updateGameWeekSelectorState(containerId, selectedGameWeek) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const buttons = container.querySelectorAll('.gameweek-button');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-gameweek') === selectedGameWeek) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+/**
+ * Filter predictions by game week
+ * @param {array} predictions - Array of prediction objects with gameId
+ * @param {Map} gamesMap - Map of gameId to game objects
+ * @param {string} gameWeek - Game week to filter by (e.g., 'GW1')
+ * @returns {array} - Filtered predictions for the specified game week
+ */
+export function filterPredictionsByGameWeek(predictions, gamesMap, gameWeek) {
+    return predictions.filter(pred => {
+        const game = gamesMap.get(pred.gameId);
+        return game && game.Fecha === gameWeek;
+    });
+}
