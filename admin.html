@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Panel - Eliminatorias Anónimas</title>
+    <meta name="title" content="Admin Panel - Eliminatorias Anónimas" />
+    <meta name="description" content="Admin panel for managing football matches" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="./css/icon/favicon-ball.ico" />
+
+    <script src="https://kit.fontawesome.com/e32607c50a.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
+        <div class="container d-flex flex-column flex-md-row justify-content-between">
+            <a class="navbar-brand" href="index.html">EA Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsExample03">
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Back to Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="leaderboard.html">Leaderboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="game_weeks.html">Game Weeks</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="hero-image-section py-2">
+        <div class="hero-image-container">
+            <img src="css/images/bg-cancha.jpg" class="img-fluid bg-img" alt="background-image">
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="py-5">
+        <div class="container">
+            <div class="app-card prediction-section">
+                <h1 class="mb-4">Admin Panel</h1>
+
+                <!-- Auth UI -->
+                <div id="auth-ui" class="mb-4">
+                    <div id="login-register-form">
+                        <div class="row">
+                            <div class="col-md-6 offset-md-3">
+                                <h3 class="mb-3">Admin Sign In</h3>
+                                <div class="form-group mb-3">
+                                    <label for="userEmail">Email:</label>
+                                    <input type="email" id="userEmail" class="form-control" placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="userPassword">Password:</label>
+                                    <input type="password" id="userPassword" class="form-control" placeholder="Enter your password" required>
+                                    <div class="text-right mt-1">
+                                        <a href="#" id="forgotPasswordLink" class="text-muted small">Forgot Password?</a>
+                                    </div>
+                                </div>
+                                <button id="signInButton" class="btn btn-success">Sign In</button>
+                                <p id="auth-message" class="text-danger mt-3" style="font-weight: bold;"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="user-status-display" style="display: none;">
+                        <div class="alert alert-info">
+                            <p>Welcome, <span id="userNameDisplay" style="font-weight: bold;"></span>!</p>
+                            <p>You are signed in as: <span id="userEmailDisplay" style="font-weight: bold;"></span></p>
+                            <button id="signOutButton" class="btn btn-danger mt-2">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Game Form Section -->
+                <div id="admin-game-form-section" style="display: none;">
+                    <h2 class="mb-4">Add New Game</h2>
+
+                    <!-- Fixture Search Section -->
+                    <div class="fixture-search-section mb-4 p-3 bg-light rounded">
+                        <div class="form-group mb-3">
+                            <label for="fixtureSearchHome">Home Team:</label>
+                            <input type="text" id="fixtureSearchHome" class="form-control" placeholder="e.g., Barcelona" list="teamNamesList">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="fixtureSearchAway">Away Team:</label>
+                            <input type="text" id="fixtureSearchAway" class="form-control" placeholder="e.g., Real Madrid" list="teamNamesList">
+                        </div>
+                        <button id="searchFixturesButton" class="btn btn-info mb-3">Search Fixtures</button>
+                        <p id="fixtureMessage" class="mt-2 mb-3 text-center"></p>
+
+                        <!-- Fixture Results -->
+                        <div id="fixtureResults" style="display: none;">
+                            <div id="fixtureList" class="list-group mb-3" style="text-align: center;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Form Entry (fallback) -->
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminHomeTeam">Home Team:</label>
+                                <input type="text" id="adminHomeTeam" class="form-control" placeholder="Team name" list="teamNamesList">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminAwayTeam">Away Team:</label>
+                                <input type="text" id="adminAwayTeam" class="form-control" placeholder="Team name" list="teamNamesList">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datalist for team autocomplete -->
+                    <datalist id="teamNamesList"></datalist>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminLeague">League:</label>
+                                <select id="adminLeague" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminFecha">Fecha (Game Week):</label>
+                                <input type="text" id="adminFecha" class="form-control" placeholder="e.g., GW1, GW2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminKickOffTime">Kick-off Time:</label>
+                                <input type="datetime-local" id="adminKickOffTime" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminStatus">Status:</label>
+                                <select id="adminStatus" class="form-control">
+                                    <option value="upcoming">Upcoming</option>
+                                    <option value="finished">Finished</option>
+                                    <option value="live">Live</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminHomeScore">Home Score (optional):</label>
+                                <input type="number" id="adminHomeScore" class="form-control" min="0" placeholder="e.g., 2">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="adminAwayScore">Away Score (optional):</label>
+                                <input type="number" id="adminAwayScore" class="form-control" min="0" placeholder="e.g., 1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="adminThesportsdbEventId" value="">
+
+                    <div class="text-center">
+                        <button id="addGameButton" class="btn btn-primary-custom btn-lg">Add Game</button>
+                    </div>
+                    <p id="gameMessage" class="mt-3 text-center"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="footer-container">
+        <a href="https://chat.whatsapp.com/2cUguIQ8AWhCTkfYLaixfi" target="_blank"><i class="footer-icon fab fa-whatsapp fa-2x"></i></a>
+        <p class='footer-link'>© 2025 José Daniel Cuéllar Lobo.</p>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you want to use
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, query, orderBy, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        // Import Authentication functions
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        // Import centralized Firebase configuration
+        import { firebaseConfig } from "./js/firebase-config.js";
+        // Import admin panel module
+        import { initializeAdminPanel, toggleAdminForm, populateAdminDropdowns, populateTeamDatalist } from "./js/admin-panel.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        console.log("Firebase initialized in admin.html");
+        console.log("Current auth user:", auth.currentUser ? auth.currentUser.email : "Not signed in");
+
+        // Initialize admin panel module
+        initializeAdminPanel(db, addDoc, collection);
+
+        // DOM References for Auth
+        const loginRegisterFormDiv = document.getElementById('login-register-form');
+        const userStatusDisplayDiv = document.getElementById('user-status-display');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const signOutButton = document.getElementById('signOutButton');
+        const userEmailInput = document.getElementById('userEmail');
+        const userPasswordInput = document.getElementById('userPassword');
+        const signInButton = document.getElementById('signInButton');
+        const authMessageDiv = document.getElementById('auth-message');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const adminGameFormSection = document.getElementById('admin-game-form-section');
+
+        // Global data
+        let currentUserId = null;
+        let currentUserEmail = null;
+        let allTeams = [];
+        let allLeagues = [];
+
+        // ADMIN_UID - Must match the value in index.html
+        const ADMIN_UID = 'NGUEFdFJB8cKZdSU6MHojOSzlkA2'; // Same UID as in index.html
+
+        /**
+         * Initialize admin dropdowns - Fetch teams and leagues from Firestore
+         */
+        async function initializeAdminDropdowns() {
+            console.log("initializeAdminDropdowns called");
+            try {
+                // Fetch Teams and Leagues from Firestore
+                const teamsRef = collection(db, 'teams');
+                const teamsSnapshot = await getDocs(query(teamsRef, orderBy('name')));
+                allTeams = [];
+                teamsSnapshot.forEach(doc => {
+                    allTeams.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Fetched teams from Firestore:", allTeams.map(t => t.name));
+
+                const leaguesRef = collection(db, 'nationalLeagues');
+                const leaguesSnapshot = await getDocs(query(leaguesRef, orderBy('name')));
+                allLeagues = [];
+                leaguesSnapshot.forEach(doc => {
+                    allLeagues.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Fetched leagues from Firestore:", allLeagues.map(l => l.name));
+
+                // Call module function to populate dropdowns
+                try {
+                    await populateAdminDropdowns();
+                    console.log("Admin dropdowns populated successfully");
+
+                    // Also populate team datalist for autocomplete
+                    console.log("Calling populateTeamDatalist with team names:", allTeams.map(t => t.name));
+                    populateTeamDatalist(allTeams.map(t => t.name));
+                    console.log("Team datalist populated successfully");
+                } catch (dropdownError) {
+                    console.error("Error populating admin dropdowns:", dropdownError);
+                }
+
+            } catch (error) {
+                console.error("Error initializing admin dropdowns:", error);
+            }
+        }
+
+        /**
+         * Handle Sign In
+         */
+        signInButton.addEventListener('click', async () => {
+            const email = userEmailInput.value.trim();
+            const password = userPasswordInput.value.trim();
+
+            if (!email || !password) {
+                authMessageDiv.textContent = 'Please enter both email and password.';
+                return;
+            }
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('User signed in:', userCredential.user.email);
+            } catch (error) {
+                authMessageDiv.textContent = `Sign in failed: ${error.message}`;
+                console.error('Sign in error:', error);
+            }
+        });
+
+        /**
+         * Handle Forgot Password
+         */
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = userEmailInput.value.trim();
+            if (!email) {
+                authMessageDiv.textContent = 'Please enter your email first.';
+                return;
+            }
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    authMessageDiv.textContent = 'Password reset email sent! Check your inbox.';
+                    authMessageDiv.style.color = 'green';
+                })
+                .catch((error) => {
+                    authMessageDiv.textContent = `Error: ${error.message}`;
+                    authMessageDiv.style.color = 'red';
+                });
+        });
+
+        /**
+         * Handle Sign Out
+         */
+        signOutButton.addEventListener('click', () => {
+            signOut(auth)
+                .then(() => {
+                    console.log('User signed out');
+                })
+                .catch((error) => {
+                    console.error('Sign out error:', error);
+                });
+        });
+
+        /**
+         * Auth State Change Listener
+         */
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in
+                currentUserId = user.uid;
+                currentUserEmail = user.email;
+
+                // Update UI for signed-in state
+                loginRegisterFormDiv.style.display = 'none';
+                userStatusDisplayDiv.style.display = 'block';
+                userNameDisplay.textContent = user.email.split('@')[0];
+                userEmailDisplay.textContent = user.email;
+
+                // Show Admin Game Form if the user is the admin
+                if (currentUserId === ADMIN_UID) {
+                    console.log("Admin user detected, initializing admin panel...");
+                    toggleAdminForm(true);
+                    // Populate admin dropdowns and datalist when admin signs in
+                    await initializeAdminDropdowns();
+                } else {
+                    console.log("Non-admin user detected. Redirecting to index.html");
+                    // Redirect non-admin users to index.html
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                }
+
+                console.log("User signed in:", user.email, "UID:", user.uid);
+
+            } else {
+                // User is signed out
+                currentUserId = null;
+                currentUserEmail = null;
+                loginRegisterFormDiv.style.display = 'block';
+                userStatusDisplayDiv.style.display = 'none';
+                adminGameFormSection.style.display = 'none';
+                authMessageDiv.textContent = '';
+            }
+        });
+
+        // Listen for admin game addition events and refresh dropdowns
+        window.addEventListener('adminGameAdded', async () => {
+            console.log("Admin game added event received, refreshing dropdowns...");
+            await initializeAdminDropdowns();
+        });
+
+        console.log("Admin panel script loaded successfully");
+    </script>
+</body>
+
+</html>
