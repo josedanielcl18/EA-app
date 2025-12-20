@@ -719,252 +719,22 @@
             });
         }
 
-        // This function populates both home and away team dropdowns with optgroups
-        function populateTeamDropdownsForAdmin() {
-            [adminHomeTeamSelect, adminAwayTeamSelect].forEach(selectElement => {
-                // Clear all existing options in the dropdown
-                selectElement.innerHTML = '';
-
-                // Add the default "Select team" option at the very top
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.textContent = "Select team";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                selectElement.appendChild(defaultOption);
-
-                // Apply LEAGUE SORTING LOGIC FOR OPTGROUPS USING 'priority' FIELD
-                allLeagues.sort((a, b) => {
-                    const priorityA = a.priority !== undefined && typeof a.priority === 'number' ? a.priority : Infinity;
-                    const priorityB = b.priority !== undefined && typeof b.priority === 'number' ? b.priority : Infinity;
-
-                    if (priorityA !== priorityB) {
-                        return priorityA - priorityB;
-                    }
-                    return a.name.localeCompare(b.name); // Fallback to alphabetical
-                });
-
-
-                // Iterate through each league to create an optgroup
-                allLeagues.forEach(league => {
-                    const optgroup = document.createElement('optgroup');
-                    optgroup.label = league.name; // Set the label for the category (e.g., "Premier League")
-
-                    // Filter teams that belong to the current league using their nationalLeagueId
-                    const teamsInThisLeague = allTeams.filter(team => team.nationalLeagueId === league.id);
-
-                    // Sort teams within this specific league alphabetically (this stays as is)
-                    teamsInThisLeague.sort((a, b) => a.name.localeCompare(b.name));
-
-                    // Add each team as an option inside its league's optgroup
-                    teamsInThisLeague.forEach(team => {
-                        const option = document.createElement('option');
-                        option.value = team.name;
-                        option.textContent = team.name;
-                        optgroup.appendChild(option);
-                    });
-
-                    // Only append the optgroup to the select if it actually contains teams
-                    if (teamsInThisLeague.length > 0) {
-                        selectElement.appendChild(optgroup);
-                    }
-                });
-            });
-        }
-
-        // --- Admin Function: Populate dropdowns ---
-        async function populateAdminDropdowns() {
-            try {
-                // Fetch Teams from Firestore
-                const teamsRef = collection(db, 'teams');
-                const teamsSnapshot = await getDocs(query(teamsRef, orderBy('name')));
-                allTeams = []; // Clear previous data
-                teamsSnapshot.forEach(doc => {
-                    // IMPORTANT: Ensure you're storing the Firestore document ID here as 'id'
-                    // We need 'id' for matching teams to leagues
-                    allTeams.push({ id: doc.id, ...doc.data() });
-                });
-                console.log("Fetched teams from Firestore:", allTeams.map(t => t.name));
-
-                // Fetch Leagues from Firestore
-                const leaguesRef = collection(db, 'nationalLeagues');
-                const leaguesSnapshot = await getDocs(query(leaguesRef, orderBy('name')));
-                allLeagues = []; // Clear previous data
-                leaguesSnapshot.forEach(doc => {
-                    // IMPORTANT: Ensure you're storing the Firestore document ID here as 'id'
-                    // We need 'id' for matching leagues to teams
-                    allLeagues.push({ id: doc.id, ...doc.data() });
-                });
-                console.log("Fetched leagues from Firestore:", allLeagues.map(l => l.name));
-
-
-                // --- START: League Dropdown Population (adminLeagueSelect) ---
-
-                // Clear existing options
-                adminLeagueSelect.innerHTML = '';
-
-                // Add default "Select league" option
-                const defaultLeagueOption = document.createElement('option');
-                defaultLeagueOption.value = "";
-                defaultLeagueOption.textContent = "Select league";
-                defaultLeagueOption.disabled = true;
-                defaultLeagueOption.selected = true;
-                adminLeagueSelect.appendChild(defaultLeagueOption);
-
-                const desiredLeaguesForAdminDropdown = [
-                    "Premier League",
-                    "La Liga",
-                    "Bundesliga",
-                    "Serie A",
-                    "Ligue 1",
-                    "Champions League", // Include Champions League here if you want to assign games to it
-                    "Europa League",
-                    "Conmebol",
-                    "World Cup",
-                    "Copa America",
-                    "Eurocopa",
-                    "International Friendlies"
-                    // Add any other specific leagues you want in this dropdown
-                ];
-
-                // Apply LEAGUE SORTING LOGIC USING 'priority' FIELD
-                allLeagues.sort((a, b) => {
-                    const priorityA = a.priority !== undefined && typeof a.priority === 'number' ? a.priority : Infinity;
-                    const priorityB = b.priority !== undefined && typeof b.priority === 'number' ? b.priority : Infinity;
-
-                    if (priorityA !== priorityB) {
-                        return priorityA - priorityB;
-                    }
-                    return a.name.localeCompare(b.name); // Fallback to alphabetical
-                });
-
-
-                desiredLeaguesForAdminDropdown.forEach(leagueName => {
-                    const option = document.createElement('option');
-                    option.value = leagueName;
-                    option.textContent = leagueName;
-                    adminLeagueSelect.appendChild(option);
-                });
-                // --- END: League Dropdown Population ---
-
-
-                // Call the function to populate the team dropdowns (which will also sort by priority)
-                populateTeamDropdownsForAdmin();
-
-
-                // Set default Kick-off time (keep this as is)
-                const now = new Date();
-                now.setHours(now.getHours() + 24);
-                const isoString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, -8);
-                adminKickOffTimeInput.value = isoString;
-
-            } catch (error) {
-                console.error("Error populating admin dropdowns from Firestore:", error);
-                if (adminMessageDiv) {
-                    adminMessageDiv.textContent = 'Error loading teams/leagues for admin form.';
-                    adminMessageDiv.style.color = 'red';
-                }
-            }
-        }
-        
-
-        // --- Admin Function: Handle Game Addition ---
-        async function handleAdminGameAdd() {
-            adminMessageDiv.textContent = 'Adding game...';
-            adminMessageDiv.style.color = 'orange';
-            addGameButton.disabled = true; // Disable button during submission
-
-            const homeTeam = adminHomeTeamSelect.value;
-            const awayTeam = adminAwayTeamSelect.value;
-            const league = adminLeagueSelect.value;
-            const kickOffTimeStr = adminKickOffTimeInput.value;
-            const status = adminStatusSelect.value;
-            const fecha = adminFechaInput.value; // Add this line
-            const homeScore = adminHomeScoreInput.value ? parseInt(adminHomeScoreInput.value, 10) : null;
-            const awayScore = adminAwayScoreInput.value ? parseInt(adminAwayScoreInput.value, 10) : null;
-
-            // Basic validation
-            if (!homeTeam || !awayTeam || !league || !kickOffTimeStr || !status) {
-                adminMessageDiv.textContent = 'Please fill in all required fields (Teams, League, Kick-off Time, Status).';
-                adminMessageDiv.style.color = 'red';
-                addGameButton.disabled = false;
-                return;
-            }
-            if (homeTeam === awayTeam) {
-                adminMessageDiv.textContent = 'Home Team and Away Team cannot be the same.';
-                adminMessageDiv.style.color = 'red';
-                addGameButton.disabled = false;
-                return;
-            }
-
-            try {
-                const kickOffTime = new Date(kickOffTimeStr);
-                if (isNaN(kickOffTime.getTime())) { // Check if date is valid
-                    adminMessageDiv.textContent = 'Invalid Kick-off Time.';
-                    adminMessageDiv.style.color = 'red';
-                    addGameButton.disabled = false;
-                    return;
-                }
-
-                const gameData = {
-                    HomeTeam: homeTeam,
-                    AwayTeam: awayTeam,
-                    KickOffTime: kickOffTime.toISOString(), // Store as ISO string for simplicity
-                    League: league,
-                    Status: status,
-                    Fecha: fecha.trim(), // Add this line
-                };
-
-                if (status === 'finished' || status === 'live') {
-                    gameData.HomeScore = homeScore;
-                    gameData.AwayScore = awayScore;
-                } else {
-                    gameData.HomeScore = null;
-                    gameData.AwayScore = null;
-                }
-
-                await addDoc(collection(db, 'games'), gameData);
-                adminMessageDiv.textContent = 'Game added successfully!';
-                adminMessageDiv.style.color = 'green';
-
-                // Clear form for next entry
-                adminHomeTeamSelect.value = ""; // Reset to default "Select team"
-                adminAwayTeamSelect.value = "";
-                adminLeagueSelect.value = "";
-                adminStatusSelect.value = "upcoming";
-                adminFechaInput.value = ''; // Clear Fecha input
-                adminHomeScoreInput.value = "";
-                adminAwayScoreInput.value = "";
-
-                await initializeAppContent(); // This will re-populate dropdowns and re-load games correctly
-
-            } catch (error) {
-                console.error("Error adding game: ", error);
-                adminMessageDiv.textContent = `Error adding game: ${error.message}`;
-                adminMessageDiv.style.color = 'red';
-            } finally {
-                addGameButton.disabled = false; // Re-enable button
-            }
-        }
-
         // --- Main Application Initialization Function ---
         async function initializeAppContent() {
             try {
-                // IMPORTANT: First, populate teams and leagues data, and WAIT for it
-                console.log("Initializing app content: Populating admin dropdowns (and global data)...");
-                await populateAdminDropdowns(); // This will populate allTeams and allLeagues
+                // First, fetch teams for logo display
+                console.log("Initializing app content: Fetching teams for logos...");
+                const teamsRef = collection(db, 'teams');
+                const teamsSnapshot = await getDocs(query(teamsRef, orderBy('name')));
+                allTeams = [];
+                teamsSnapshot.forEach(doc => {
+                    allTeams.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Teams loaded:", allTeams.length, "teams");
 
-                // Then, after data is ready, load and display games
+                // Then load and display games
                 console.log("Initializing app content: Loading games...");
                 await loadGames();
-
-                // If you have a separate function to load predictions based on auth state, call it here,
-                // or ensure your onAuthStateChanged listener handles it.
-                // For example:
-                // if (currentUserId) {
-                //     await loadUserPredictions(currentUserId);
-                // }
-                
                 console.log("App content initialization complete.");
 
             } catch (error) {
@@ -1037,13 +807,6 @@
                 submitPredictionsButton.addEventListener('click', submitPredictions);
             } else {
                 console.warn("submitPredictionsButton not found. Check HTML ID.");
-            }
-
-            // Admin Add Game button listener
-            if (addGameButton) { // addGameButton should be globally defined
-                addGameButton.addEventListener('click', handleAdminGameAdd);
-            } else {
-                console.warn("addGameButton not found. Check HTML ID.");
             }
 
             // ===========================================================
