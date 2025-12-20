@@ -13,8 +13,10 @@
 const THESPORTSDB_API_KEY = '123'; // Your free API key from TheSportsDB
 const THESPORTSDB_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_API_KEY}`;
 
-// Rate limiting: 1 request per 6 seconds (TheSportsDB free tier limit)
-const RATE_LIMIT_MS = 6000;
+// Rate limiting: 30 requests per minute for free tier
+// That's approximately 1 request every 2 seconds (2000ms)
+// Using 2100ms to be safe with a small buffer
+const RATE_LIMIT_MS = 2100;
 let lastRequestTime = 0;
 
 /**
