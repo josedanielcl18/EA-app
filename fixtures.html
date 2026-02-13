@@ -53,9 +53,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { firebaseConfig } from "./js/firebase-config.js";
-        import { createGameWeekSelector, updateGameWeekSelectorState } from "./js/ui-helpers.js";
+        import { createGameWeekSelector, updateGameWeekSelectorState, fetchActiveSeason } from "./js/ui-helpers.js";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -64,6 +64,7 @@
         let allGames = [];
         let selectedGameWeek = null;
         let allTeams = {};
+        let selectedSeason = null;
 
         const gameListDiv = document.getElementById('game-list');
         const fixturesGameweekSelector = document.getElementById('fixtures-gameweek-selector');
@@ -89,7 +90,12 @@
 
             try {
                 const gamesRef = collection(db, 'games');
-                const q = query(gamesRef, orderBy('KickOffTime', 'asc'));
+                let q;
+                if (selectedSeason) {
+                    q = query(gamesRef, where('season', '==', selectedSeason));
+                } else {
+                    q = query(gamesRef, orderBy('KickOffTime', 'asc'));
+                }
                 const snapshot = await getDocs(q);
 
                 if (snapshot.empty) {
@@ -204,6 +210,10 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch active season
+            const seasonConfig = await fetchActiveSeason(db);
+            selectedSeason = seasonConfig ? seasonConfig.name : null;
+
             await loadTeams();
             await loadGames();
         });
