@@ -36,23 +36,46 @@ let adminThesportsdbEventId;
 let db;
 let addDocFunction;
 let collectionFunction;
+let getDocsFunction;
+let queryFunction;
+let whereFunction;
+let docFunction;
+let updateDocFunction;
+
+// Update Results DOM References
+let updateResultsButton;
+let updateResultsLog;
+let updateResultsMessage;
 
 /**
  * Initialize admin panel by getting all DOM references
  * @param {object} database - Firestore database instance
  * @param {function} addDoc - Firestore addDoc function
  * @param {function} collection - Firestore collection function
+ * @param {object} extraFunctions - Additional Firestore functions for update results
+ * @param {function} extraFunctions.getDocs
+ * @param {function} extraFunctions.query
+ * @param {function} extraFunctions.where
+ * @param {function} extraFunctions.doc
+ * @param {function} extraFunctions.updateDoc
  */
-export function initializeAdminPanel(database, addDoc, collection) {
+export function initializeAdminPanel(database, addDoc, collection, extraFunctions = {}) {
     db = database;
     addDocFunction = addDoc;
     collectionFunction = collection;
+    getDocsFunction = extraFunctions.getDocs;
+    queryFunction = extraFunctions.query;
+    whereFunction = extraFunctions.where;
+    docFunction = extraFunctions.doc;
+    updateDocFunction = extraFunctions.updateDoc;
     
     // Debug logging
     console.log("Admin panel initialized with:");
     console.log("  db:", db ? "✓" : "✗");
     console.log("  addDocFunction:", addDocFunction ? "✓" : "✗");
     console.log("  collectionFunction:", collectionFunction ? "✓" : "✗");
+    console.log("  getDocsFunction:", getDocsFunction ? "✓" : "✗");
+    console.log("  updateDocFunction:", updateDocFunction ? "✓" : "✗");
     
     // Get all admin form references
     adminGameFormSection = document.getElementById('admin-game-form-section');
@@ -76,12 +99,20 @@ export function initializeAdminPanel(database, addDoc, collection) {
     fixtureList = document.getElementById('fixtureList');
     adminThesportsdbEventId = document.getElementById('adminThesportsdbEventId');
     
+    // Get update results references
+    updateResultsButton = document.getElementById('updateResultsButton');
+    updateResultsLog = document.getElementById('updateResultsLog');
+    updateResultsMessage = document.getElementById('updateResultsMessage');
+    
     // Attach event listeners
     if (searchFixturesButton) {
         searchFixturesButton.addEventListener('click', handleFixtureSearch);
     }
     if (addGameButton) {
         addGameButton.addEventListener('click', handleAdminGameAdd);
+    }
+    if (updateResultsButton) {
+        updateResultsButton.addEventListener('click', handleUpdateResults);
     }
 }
 
@@ -281,6 +312,140 @@ export function selectFixture(fixture) {
     const fixtureSearchSection = document.querySelector('.fixture-search-section');
     if (fixtureSearchSection) {
         fixtureSearchSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+/**
+ * Handle "Update All Results" — queries Firestore for pending games with
+ * a thesportsdbEventId, checks the API for final scores, and updates Firestore.
+ * 
+ * This is the same logic that the GitHub Actions cron job will replicate
+ * server-side using firebase-admin + the same TheSportsDB endpoint.
+ */
+export async function handleUpdateResults() {
+    if (!getDocsFunction || !queryFunction || !whereFunction || !docFunction || !updateDocFunction) {
+        console.error('Firestore query/update functions not initialized');
+        if (updateResultsMessage) {
+            updateResultsMessage.textContent = 'Error: Firestore functions not initialized.';
+            updateResultsMessage.className = 'mt-2 text-center text-danger';
+        }
+        return;
+    }
+
+    updateResultsButton.disabled = true;
+    updateResultsButton.textContent = 'Checking results...';
+    updateResultsMessage.textContent = '';
+    updateResultsMessage.className = 'mt-2 text-center';
+    updateResultsLog.innerHTML = '';
+
+    const addLogEntry = (message, type = 'info') => {
+        const colors = { info: '#6c757d', success: '#198754', warning: '#ffc107', error: '#dc3545', skip: '#0dcaf0' };
+        const entry = document.createElement('div');
+        entry.style.cssText = `padding: 4px 8px; font-size: 0.85rem; color: ${colors[type] || colors.info}; border-left: 3px solid ${colors[type] || colors.info}; margin-bottom: 4px; background: #f8f9fa;`;
+        entry.textContent = message;
+        updateResultsLog.appendChild(entry);
+        updateResultsLog.scrollTop = updateResultsLog.scrollHeight;
+    };
+
+    try {
+        // 1. Query games that are still upcoming (finished games are never touched)
+        addLogEntry('Querying Firestore for upcoming games...');
+        const gamesRef = collectionFunction(db, 'games');
+        const q = queryFunction(gamesRef, whereFunction('Status', '==', 'upcoming'));
+        const snapshot = await getDocsFunction(q);
+
+        if (snapshot.empty) {
+            addLogEntry('No upcoming games found.', 'warning');
+            updateResultsMessage.textContent = 'No upcoming games to check.';
+            updateResultsMessage.className = 'mt-2 text-center text-warning';
+            return;
+        }
+
+        // 2. Filter to games that have a thesportsdbEventId and kick-off is in the past
+        const now = new Date();
+        const pendingGames = [];
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const eventId = data.thesportsdbEventId;
+            const kickOff = data.KickOffTime ? new Date(data.KickOffTime) : null;
+
+            if (!eventId) {
+                addLogEntry(`⏭️ ${data.HomeTeam} vs ${data.AwayTeam} — no event ID, skipping`, 'skip');
+                return;
+            }
+            if (kickOff && kickOff > now) {
+                addLogEntry(`⏭️ ${data.HomeTeam} vs ${data.AwayTeam} — hasn't kicked off yet`, 'skip');
+                return;
+            }
+
+            pendingGames.push({ id: docSnap.id, ...data });
+        });
+
+        if (pendingGames.length === 0) {
+            addLogEntry('All pending games either lack event IDs or haven\'t kicked off.', 'warning');
+            updateResultsMessage.textContent = 'No games ready for result updates.';
+            updateResultsMessage.className = 'mt-2 text-center text-warning';
+            return;
+        }
+
+        addLogEntry(`Found ${pendingGames.length} game(s) to check...`);
+
+        // 3. Look up each event via TheSportsDB API
+        const { lookupEventById } = await import('../firebase-uploader/src/fetchFixtures.js');
+
+        let updatedCount = 0;
+        let notFinishedCount = 0;
+        let errorCount = 0;
+
+        for (const game of pendingGames) {
+            const label = `${game.HomeTeam} vs ${game.AwayTeam}`;
+            addLogEntry(`🔍 Checking: ${label} (event ${game.thesportsdbEventId})...`);
+
+            const result = await lookupEventById(game.thesportsdbEventId);
+
+            if (!result) {
+                addLogEntry(`❌ ${label} — API lookup failed`, 'error');
+                errorCount++;
+                continue;
+            }
+
+            if (!result.isFinished) {
+                addLogEntry(`⏳ ${label} — not finished yet (status: ${result.status || 'unknown'})`, 'warning');
+                notFinishedCount++;
+                continue;
+            }
+
+            // 4. Update Firestore with the final score
+            const gameRef = docFunction(db, 'games', game.id);
+            await updateDocFunction(gameRef, {
+                HomeScore: result.homeScore,
+                AwayScore: result.awayScore,
+                Status: 'finished',
+            });
+
+            addLogEntry(`✅ ${label} — updated: ${result.homeScore}-${result.awayScore}`, 'success');
+            updatedCount++;
+        }
+
+        // 5. Summary
+        const summary = `Done! Updated: ${updatedCount} | Not finished: ${notFinishedCount} | Errors: ${errorCount}`;
+        addLogEntry(summary, updatedCount > 0 ? 'success' : 'info');
+        updateResultsMessage.textContent = summary;
+        updateResultsMessage.className = `mt-2 text-center ${updatedCount > 0 ? 'text-success' : 'text-info'}`;
+
+        // Notify parent that data was updated (so game lists refresh)
+        if (updatedCount > 0) {
+            window.dispatchEvent(new Event('adminGameAdded'));
+        }
+
+    } catch (error) {
+        console.error('Error updating results:', error);
+        addLogEntry(`Fatal error: ${error.message}`, 'error');
+        updateResultsMessage.textContent = `Error: ${error.message}`;
+        updateResultsMessage.className = 'mt-2 text-center text-danger';
+    } finally {
+        updateResultsButton.disabled = false;
+        updateResultsButton.textContent = '🔄 Update All Results';
     }
 }
 

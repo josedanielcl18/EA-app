@@ -223,6 +223,61 @@ export async function searchFixture(homeTeamName, awayTeamName) {
 
 
 /**
+ * Look up a single event by its TheSportsDB event ID.
+ * Returns normalized result with scores and finished status.
+ * 
+ * This is the core reusable function — used by the admin "Update Results" 
+ * button client-side, and can be replicated in a GitHub Actions script server-side.
+ * 
+ * @param {string} eventId - TheSportsDB event ID (e.g., "1032723")
+ * @returns {Promise<object|null>} Result object or null if not found
+ */
+export async function lookupEventById(eventId) {
+    if (!eventId) {
+        console.warn('[lookupEventById] No eventId provided');
+        return null;
+    }
+
+    try {
+        await enforceRateLimit();
+
+        const url = `${THESPORTSDB_BASE_URL}/lookupevent.php?id=${encodeURIComponent(eventId)}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.error(`[lookupEventById] API returned status ${response.status}`);
+            return null;
+        }
+
+        const data = await response.json();
+
+        if (!data.events || data.events.length === 0) {
+            console.warn(`[lookupEventById] No event found for ID "${eventId}"`);
+            return null;
+        }
+
+        const event = data.events[0];
+        const isFinished = (event.strStatus || '').toLowerCase().includes('finished')
+            || (event.strStatus || '').toLowerCase().includes('full time')
+            || (event.strStatus || '').toLowerCase() === 'ft';
+
+        return {
+            homeScore: event.intHomeScore !== null && event.intHomeScore !== '' 
+                ? parseInt(event.intHomeScore, 10) : null,
+            awayScore: event.intAwayScore !== null && event.intAwayScore !== '' 
+                ? parseInt(event.intAwayScore, 10) : null,
+            status: event.strStatus || null,
+            homeTeam: event.strHomeTeam,
+            awayTeam: event.strAwayTeam,
+            isFinished,
+        };
+    } catch (error) {
+        console.error('[lookupEventById] Error:', error.message);
+        return null;
+    }
+}
+
+/**
  * Debug function: Log fixture details for inspection
  * 
  * @param {object} fixture - Fixture object to inspect

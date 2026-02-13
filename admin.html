@@ -93,6 +93,22 @@
 
                 <!-- Admin Game Form Section -->
                 <div id="admin-game-form-section" style="display: none;">
+
+                    <!-- Update Results Section -->
+                    <div class="update-results-section mb-4 p-3 rounded" style="border: 2px solid #198754; background: #f0fdf4;">
+                        <h4 class="mb-3"><i class="fas fa-sync-alt"></i> Update Game Results</h4>
+                        <p class="text-muted small mb-3">
+                            Checks all upcoming games that have a TheSportsDB event ID and updates scores automatically.
+                        </p>
+                        <button id="updateResultsButton" class="btn btn-success mb-2">
+                            🔄 Update All Results
+                        </button>
+                        <p id="updateResultsMessage" class="mt-2 text-center"></p>
+                        <div id="updateResultsLog" style="max-height: 250px; overflow-y: auto; border-radius: 6px;"></div>
+                    </div>
+
+                    <hr>
+
                     <h2 class="mb-4">Add New Game</h2>
 
                     <!-- Fixture Search Section -->
@@ -209,7 +225,7 @@
         // Import centralized Firebase configuration
         import { firebaseConfig } from "./js/firebase-config.js";
         // Import admin panel module
-        import { initializeAdminPanel, toggleAdminForm, populateAdminDropdowns, populateTeamDatalist } from "./js/admin-panel.js";
+        import { initializeAdminPanel, toggleAdminForm, populateAdminDropdowns, populateTeamDatalist, handleUpdateResults } from "./js/admin-panel.js";
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -219,8 +235,8 @@
         console.log("Firebase initialized in admin.html");
         console.log("Current auth user:", auth.currentUser ? auth.currentUser.email : "Not signed in");
 
-        // Initialize admin panel module
-        initializeAdminPanel(db, addDoc, collection);
+        // Initialize admin panel module with all Firestore functions
+        initializeAdminPanel(db, addDoc, collection, { getDocs, query, where, doc, updateDoc });
 
         // DOM References for Auth
         const loginRegisterFormDiv = document.getElementById('login-register-form');
