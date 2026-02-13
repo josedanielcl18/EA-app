@@ -392,9 +392,9 @@ export function createSeasonSelector(containerId, allSeasons, activeSeason, onSe
     const noSeasonOption = `<option value="__none__">No Season (historical)</option>`;
 
     container.innerHTML = `
-        <div class="d-flex align-items-center justify-content-center mb-3">
-            <label for="season-select-${containerId}" class="mr-2 mb-0" style="white-space: nowrap;">Season:</label>
-            <select id="season-select-${containerId}" class="form-control" style="max-width: 280px;">
+        <div class="d-flex align-items-center justify-content-center mb-3" style="gap: 10px;">
+            <label for="season-select-${containerId}" class="mb-0" style="white-space: nowrap; font-weight: 600;">Season:</label>
+            <select id="season-select-${containerId}" class="form-control" style="max-width: 280px; padding: 8px 12px;">
                 ${options}
                 ${noSeasonOption}
             </select>
