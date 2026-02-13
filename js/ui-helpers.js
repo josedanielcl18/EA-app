@@ -4,7 +4,7 @@
  * Includes: Player history modal, leaderboard rendering, and modal management
  */
 
-import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import { calculatePoints, calculatePlayerStats, getPlayerStats } from "./calculations.js";
 
 /**
@@ -343,5 +343,66 @@ export function filterPredictionsByGameWeek(predictions, gamesMap, gameWeek) {
     return predictions.filter(pred => {
         const game = gamesMap.get(pred.gameId);
         return game && game.Fecha === gameWeek;
+    });
+}
+
+// ===================================
+// Season Helpers
+// ===================================
+
+/**
+ * Fetch the active season config from Firestore.
+ * Returns { name, allSeasons } or null if not set.
+ * @param {object} db - Firestore database instance
+ * @returns {Promise<object|null>}
+ */
+export async function fetchActiveSeason(db) {
+    try {
+        const configRef = doc(db, 'config', 'activeSeason');
+        const configSnap = await getDoc(configRef);
+        if (configSnap.exists()) {
+            const data = configSnap.data();
+            return { name: data.name || null, allSeasons: data.allSeasons || [] };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching active season:', error);
+        return null;
+    }
+}
+
+/**
+ * Create a season selector dropdown at the given container.
+ * Calls onSelect(seasonName) when the user picks a season.
+ * @param {string} containerId - ID of the element to render into
+ * @param {array} allSeasons - Array of season name strings
+ * @param {string} activeSeason - Currently active season name
+ * @param {function} onSelect - Callback when a season is selected
+ */
+export function createSeasonSelector(containerId, allSeasons, activeSeason, onSelect) {
+    const container = document.getElementById(containerId);
+    if (!container || !allSeasons || allSeasons.length === 0) {
+        if (container) container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    // Build options: all real seasons + "No Season" for historical data
+    const options = allSeasons.map(s => `<option value="${s}" ${s === activeSeason ? 'selected' : ''}>${s}</option>`).join('');
+    const noSeasonOption = `<option value="__none__">No Season (historical)</option>`;
+
+    container.innerHTML = `
+        <div class="d-flex align-items-center justify-content-center mb-3">
+            <label for="season-select-${containerId}" class="mr-2 mb-0" style="white-space: nowrap;">Season:</label>
+            <select id="season-select-${containerId}" class="form-control" style="max-width: 280px;">
+                ${options}
+                ${noSeasonOption}
+            </select>
+        </div>
+    `;
+
+    const select = document.getElementById(`season-select-${containerId}`);
+    select.addEventListener('change', (e) => {
+        onSelect(e.target.value);
     });
 }
