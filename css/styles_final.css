@@ -53,6 +53,29 @@ p.text-muted {
     border-left: 4px solid var(--color-primary);
 }
 
+/* Override white .app-card background when used with .game-results-card (leaderboard) */
+.game-results-card.app-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    color: #f0f0f0;
+}
+
+.game-results-card.app-card p,
+.game-results-card.app-card span,
+.game-results-card.app-card strong {
+    color: #e0e0e0;
+}
+
+.game-results-card.app-card .actual-result {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.game-results-card.app-card hr {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
 .game-results-card .game-header {
     font-weight: 600;
     color: var(--color-accent-cyan);
@@ -97,6 +120,12 @@ p.text-muted {
     background-color: rgba(1, 157, 154, 0.05);
     border-radius: 4px;
     margin-bottom: 10px;
+}
+
+/* Stronger contrast for prediction rows inside dark cards */
+.game-results-card.app-card .prediction-entry {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .prediction-entry .score {
