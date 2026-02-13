@@ -134,6 +134,8 @@
             <hr class="my-5"> 
             
             <div id="my-predictions-section" class="prediction-section" style="display: none;"> <h2 class="section-heading">My Submitted Predictions</h2>
+                <!-- Season Selector -->
+                <div id="season-selector-container" class="text-center mb-3" style="display: none;"></div>
                 <!-- Game Week Selector for My Predictions -->
                 <div id="my-predictions-gameweek-selector" class="gameweek-selector text-center mb-4" style="display: none;">
                     <h5 class="mb-3">Filter by Game Week:</h5>
@@ -240,6 +242,8 @@
         let allTeams = [];
         let allLeagues = [];
         let activeSeason = null; // Active season name for filtering
+        let seasonReadyResolve;
+        const seasonReady = new Promise(resolve => { seasonReadyResolve = resolve; });
 
         // --- UI Element References ---
         const playerNameInput = document.getElementById('playerName');
@@ -426,7 +430,7 @@
 
                 const gamesRef = collection(db, 'games');
                 let q;
-                if (activeSeason) {
+                if (activeSeason && activeSeason !== '__none__') {
                     q = query(gamesRef, where('season', '==', activeSeason));
                 } else {
                     q = query(gamesRef, orderBy('KickOffTime', 'asc'));
@@ -445,6 +449,9 @@
                 snapshot.forEach(doc => {
                     const game = doc.data();
                     const gameId = doc.id;
+
+                    // Client-side filter for "No Season"
+                    if (activeSeason === '__none__' && game.season) return;
 
                     const homeTeamLogo = teamLogoMap.get(game.HomeTeam) || 'path/to/default_logo.png';
                     const awayTeamLogo = teamLogoMap.get(game.AwayTeam) || 'path/to/default_logo.png';
@@ -558,7 +565,7 @@
                             predictedHomeScore: prediction.predictedHomeScore,
                             predictedAwayScore: prediction.predictedAwayScore,
                             timestamp: new Date(), // Update timestamp on every submission
-                            ...(activeSeason ? { season: activeSeason } : {})
+                            ...(activeSeason && activeSeason !== '__none__' ? { season: activeSeason } : {})
                         };
 
                         if (!existingPredictionsSnapshot.empty) {
@@ -614,14 +621,19 @@
             myPredictionsList.innerHTML = '<p class="text-center">Loading your predictions...</p>';
 
             try {
+                // Wait for season config to be loaded
+                await seasonReady;
                 // Fetch games first (filtered by season), then user predictions for those games
                 gamesMapForPredictions = new Map();
-                const gamesSnapshot = await getDocs(activeSeason
+                const gamesSnapshot = await getDocs(activeSeason && activeSeason !== '__none__'
                     ? query(collection(db, 'games'), where('season', '==', activeSeason))
                     : collection(db, 'games')
                 );
                 gamesSnapshot.forEach(doc => {
-                    gamesMapForPredictions.set(doc.id, doc.data());
+                    const gameData = doc.data();
+                    // Client-side filter for "No Season"
+                    if (activeSeason === '__none__' && gameData.season) return;
+                    gamesMapForPredictions.set(doc.id, gameData);
                 });
 
                 // Fetch all user predictions, then filter to only those matching season games
@@ -661,7 +673,7 @@
                     return a.localeCompare(b);
                 });
 
-                // Show game week selector only if there are multiple weeks
+                // Show game week selector if there are game weeks
                 if (gameWeeksList.length > 1) {
                     myPredictionsGameweekSelector.style.display = 'block';
                     // Select the latest game week by default
@@ -684,6 +696,9 @@
                 } else if (gameWeeksList.length === 1) {
                     myPredictionsGameweekSelector.style.display = 'none';
                     selectedMyPredictionsGameWeek = gameWeeksList[0];
+                } else {
+                    myPredictionsGameweekSelector.style.display = 'none';
+                    selectedMyPredictionsGameWeek = null;
                 }
 
                 displayFilteredMyPredictions();
@@ -736,10 +751,20 @@
         async function initializeAppContent() {
             try {
                 // Fetch active season first
-                const { fetchActiveSeason } = await import('./js/ui-helpers.js');
+                const { fetchActiveSeason, createSeasonSelector } = await import('./js/ui-helpers.js');
                 const seasonConfig = await fetchActiveSeason(db);
                 activeSeason = seasonConfig ? seasonConfig.name : null;
+                seasonReadyResolve(); // Signal that season is loaded
                 console.log('Active season:', activeSeason || '(none)');
+
+                // Show season dropdown if seasons exist
+                if (seasonConfig && seasonConfig.allSeasons && seasonConfig.allSeasons.length >= 1) {
+                    createSeasonSelector('season-selector-container', seasonConfig.allSeasons, activeSeason, (season) => {
+                        activeSeason = season;
+                        loadGames();
+                        if (currentUserId) loadMyPredictions();
+                    });
+                }
 
                 // First, fetch teams for logo display
                 console.log("Initializing app content: Fetching teams for logos...");
