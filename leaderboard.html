@@ -172,16 +172,16 @@
                                     pointsClass = 'pending';
                                 } else if (points === 10) {
                                     pointsDisplay = `(${points} points - Perfect Score!)`;
-                                    pointsClass = 'text-success';
+                                    pointsClass = 'perfect';
                                 } else if (points >= 5) {
                                     pointsDisplay = `(${points} points)`;
-                                    pointsClass = 'text-info';
+                                    pointsClass = 'high';
                                 } else if (points > 0) {
                                     pointsDisplay = `(${points} points)`;
-                                    pointsClass = 'text-warning';
+                                    pointsClass = 'medium';
                                 } else {
                                     pointsDisplay = `(${points} points)`;
-                                    pointsClass = 'text-danger';
+                                    pointsClass = 'zero';
                                 }
 
                                 return `
