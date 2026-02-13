@@ -41,11 +41,23 @@ let queryFunction;
 let whereFunction;
 let docFunction;
 let updateDocFunction;
+let getDocFunction;
+let setDocFunction;
+let arrayUnionFunction;
 
 // Update Results DOM References
 let updateResultsButton;
 let updateResultsLog;
 let updateResultsMessage;
+
+// Season Management DOM References
+let activeSeasonDisplay;
+let newSeasonInput;
+let createSeasonButton;
+let seasonMessage;
+
+// Current active season
+let activeSeason = null;
 
 /**
  * Initialize admin panel by getting all DOM references
@@ -68,6 +80,9 @@ export function initializeAdminPanel(database, addDoc, collection, extraFunction
     whereFunction = extraFunctions.where;
     docFunction = extraFunctions.doc;
     updateDocFunction = extraFunctions.updateDoc;
+    getDocFunction = extraFunctions.getDoc;
+    setDocFunction = extraFunctions.setDoc;
+    arrayUnionFunction = extraFunctions.arrayUnion;
     
     // Debug logging
     console.log("Admin panel initialized with:");
@@ -104,6 +119,12 @@ export function initializeAdminPanel(database, addDoc, collection, extraFunction
     updateResultsLog = document.getElementById('updateResultsLog');
     updateResultsMessage = document.getElementById('updateResultsMessage');
     
+    // Get season management references
+    activeSeasonDisplay = document.getElementById('activeSeasonDisplay');
+    newSeasonInput = document.getElementById('newSeasonInput');
+    createSeasonButton = document.getElementById('createSeasonButton');
+    seasonMessage = document.getElementById('seasonMessage');
+    
     // Attach event listeners
     if (searchFixturesButton) {
         searchFixturesButton.addEventListener('click', handleFixtureSearch);
@@ -113,6 +134,9 @@ export function initializeAdminPanel(database, addDoc, collection, extraFunction
     }
     if (updateResultsButton) {
         updateResultsButton.addEventListener('click', handleUpdateResults);
+    }
+    if (createSeasonButton) {
+        createSeasonButton.addEventListener('click', handleCreateSeason);
     }
 }
 
@@ -178,6 +202,13 @@ export async function handleAdminGameAdd() {
             return;
         }
 
+        if (!activeSeason) {
+            gameMessageDiv.textContent = '⚠️ No active season set. Please create a season first.';
+            gameMessageDiv.style.color = 'red';
+            addGameButton.disabled = false;
+            return;
+        }
+
         const gameData = {
             HomeTeam: homeTeam,
             AwayTeam: awayTeam,
@@ -185,6 +216,7 @@ export async function handleAdminGameAdd() {
             League: league,
             Status: status,
             Fecha: fecha,
+            season: activeSeason,
         };
 
         // Add thesportsdbEventId if available
@@ -580,5 +612,89 @@ export function populateTeamDatalist(teams) {
         console.log(`✓ Added ${teams.length} teams to datalist`);
     } else {
         console.warn("No teams provided to populateTeamDatalist");
+    }
+}
+
+// ===================================
+// Season Management Functions
+// ===================================
+
+/**
+ * Fetch the active season from Firestore config/activeSeason doc.
+ * Returns the season name string or null if not set.
+ */
+export async function getActiveSeason() {
+    if (!getDocFunction || !docFunction) {
+        console.warn('getDoc/doc functions not initialized — cannot fetch active season');
+        return null;
+    }
+    try {
+        const configRef = docFunction(db, 'config', 'activeSeason');
+        const configSnap = await getDocFunction(configRef);
+        if (configSnap.exists()) {
+            const data = configSnap.data();
+            activeSeason = data.name || null;
+            return { name: data.name, allSeasons: data.allSeasons || [] };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching active season:', error);
+        return null;
+    }
+}
+
+/**
+ * Handle creating a new season.
+ * Updates config/activeSeason doc with new name and appends to allSeasons array.
+ */
+async function handleCreateSeason() {
+    const newName = newSeasonInput.value.trim();
+    if (!newName) {
+        seasonMessage.textContent = 'Please enter a season name.';
+        seasonMessage.style.color = 'red';
+        return;
+    }
+
+    if (!setDocFunction || !docFunction || !arrayUnionFunction) {
+        seasonMessage.textContent = 'Error: Firestore functions not initialized.';
+        seasonMessage.style.color = 'red';
+        return;
+    }
+
+    createSeasonButton.disabled = true;
+    seasonMessage.textContent = 'Creating season...';
+    seasonMessage.style.color = 'orange';
+
+    try {
+        const configRef = docFunction(db, 'config', 'activeSeason');
+        await setDocFunction(configRef, {
+            name: newName,
+            allSeasons: arrayUnionFunction(newName),
+        }, { merge: true });
+
+        activeSeason = newName;
+        if (activeSeasonDisplay) {
+            activeSeasonDisplay.textContent = newName;
+        }
+        newSeasonInput.value = '';
+        seasonMessage.textContent = `Season "${newName}" created and set as active!`;
+        seasonMessage.style.color = 'green';
+    } catch (error) {
+        console.error('Error creating season:', error);
+        seasonMessage.textContent = `Error: ${error.message}`;
+        seasonMessage.style.color = 'red';
+    } finally {
+        createSeasonButton.disabled = false;
+    }
+}
+
+/**
+ * Load and display the active season in the admin UI.
+ * Called after admin signs in.
+ */
+export async function loadSeasonUI() {
+    const seasonData = await getActiveSeason();
+    if (activeSeasonDisplay) {
+        activeSeasonDisplay.textContent = seasonData ? seasonData.name : 'None — create one below';
     }
 }
