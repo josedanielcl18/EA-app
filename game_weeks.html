@@ -36,6 +36,8 @@
         <h1 class="text-center mb-4">Game Weeks</h1>
         <p class="text-center text-muted mb-4">Compare all players' scores across games by game week</p>
 
+        <div id="season-selector-container" class="text-center mb-3" style="display: none;"></div>
+
         <!-- Game Week Selector -->
         <div class="gameweek-selector text-center">
             <div id="gameweek-buttons">
@@ -90,7 +92,7 @@
         import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { calculatePoints, calculatePlayerStats, getPlayerStats, getScoreClass } from "./js/calculations.js";
         import { firebaseConfig } from "./js/firebase-config.js";
-        import { createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers } from "./js/ui-helpers.js";
+        import { createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers, fetchActiveSeason, createSeasonSelector } from "./js/ui-helpers.js";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -125,15 +127,25 @@
         let allTeams = {};
         let currentMatrixGames = null;
         let currentMatrixPredictions = null;
+        let selectedSeason = null;
+        let allSeasonsConfig = null;
 
         // Load available game weeks
         async function loadGameWeeks() {
             try {
-                const gamesSnapshot = await getDocs(query(collection(db, 'games'), orderBy('KickOffTime', 'asc')));
+                let gamesQuery;
+                if (selectedSeason && selectedSeason !== '__none__') {
+                    gamesQuery = query(collection(db, 'games'), where('season', '==', selectedSeason));
+                } else {
+                    gamesQuery = query(collection(db, 'games'), orderBy('KickOffTime', 'asc'));
+                }
+                const gamesSnapshot = await getDocs(gamesQuery);
                 const gameWeekSet = new Set();
                 
                 gamesSnapshot.forEach(doc => {
                     const game = doc.data();
+                    // Client-side filter for "No Season"
+                    if (selectedSeason === '__none__' && game.season) return;
                     if (game.Fecha) {
                         gameWeekSet.add(game.Fecha);
                     }
@@ -182,13 +194,19 @@
                     allGames.push(gameData);
                 });
 
-                // Fetch ALL predictions
-                const predictionsRef = collection(db, 'predictions');
+                // Fetch predictions for the filtered games (by gameId)
                 const allPredictions = [];
-                const predSnapshot = await getDocs(predictionsRef);
-                predSnapshot.forEach(doc => {
-                    allPredictions.push(doc.data());
-                });
+                const gameIds = allGames.map(g => g.id);
+                
+                if (gameIds.length > 0) {
+                    for (let i = 0; i < gameIds.length; i += 10) {
+                        const batch = gameIds.slice(i, i + 10);
+                        const predSnapshot = await getDocs(query(collection(db, 'predictions'), where('gameId', 'in', batch)));
+                        predSnapshot.forEach(doc => {
+                            allPredictions.push(doc.data());
+                        });
+                    }
+                }
 
                 // Calculate overall stats using the calculations module
                 overallPlayerStats = calculatePlayerStats(allGames, allPredictions);
@@ -249,7 +267,7 @@
             matrixContainer.innerHTML = '<p class="loading-message">Loading game week data...</p>';
             
             try {
-                // Fetch games for this game week (without orderBy to avoid needing composite index)
+                // Fetch games for this game week
                 const gamesRef = collection(db, 'games');
                 const gamesQuery = query(
                     gamesRef,
@@ -263,6 +281,9 @@
                 gamesSnapshot.forEach(doc => {
                     const gameData = doc.data();
                     gameData.id = doc.id;
+                    // Client-side season filter
+                    if (selectedSeason && selectedSeason !== '__none__' && gameData.season !== selectedSeason) return;
+                    if (selectedSeason === '__none__' && gameData.season) return;
                     games.push(gameData);
                     gameMap[doc.id] = gameData;
                 });
@@ -496,7 +517,22 @@
         }
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', loadGameWeeks);
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch season config
+            allSeasonsConfig = await fetchActiveSeason(db);
+            selectedSeason = allSeasonsConfig ? allSeasonsConfig.name : null;
+
+            // Show season dropdown when seasons exist
+            if (allSeasonsConfig && allSeasonsConfig.allSeasons && allSeasonsConfig.allSeasons.length >= 1) {
+                document.getElementById('season-selector-container').style.display = 'block';
+                createSeasonSelector('season-selector-container', allSeasonsConfig.allSeasons, selectedSeason, (season) => {
+                    selectedSeason = season;
+                    loadGameWeeks();
+                });
+            }
+
+            await loadGameWeeks();
+        });
     </script>
 
 </body>
