@@ -94,6 +94,22 @@
                 <!-- Admin Game Form Section -->
                 <div id="admin-game-form-section" style="display: none;">
 
+                    <!-- Season Management Section -->
+                    <div class="season-management-section mb-4 p-4 rounded" style="border: 2px solid #0d6efd; background: #f0f4ff;">
+                        <h4 class="mb-3 text-center"><i class="fas fa-trophy"></i> Season Management</h4>
+                        <div class="text-center mb-3">
+                            <span class="text-muted">Active Season:</span><br>
+                            <span id="activeSeasonDisplay" class="badge bg-primary fs-6 px-3 py-2 mt-1 d-inline-block">Loading...</span>
+                        </div>
+                        <div class="text-center">
+                            <input type="text" id="newSeasonInput" class="form-control mx-auto mb-2" style="max-width: 350px;" placeholder="New season name">
+                            <button id="createSeasonButton" class="btn btn-primary">Create &amp; Set Active</button>
+                        </div>
+                        <p id="seasonMessage" class="mt-2 small text-center"></p>
+                    </div>
+
+                    <hr>
+
                     <!-- Update Results Section -->
                     <div class="update-results-section mb-4 p-3 rounded" style="border: 2px solid #198754; background: #f0fdf4;">
                         <h4 class="mb-3"><i class="fas fa-sync-alt"></i> Update Game Results</h4>
@@ -219,13 +235,13 @@
     <script type="module">
         // Import the functions you need from the SDKs you want to use
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, orderBy, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, orderBy, where, doc, updateDoc, getDoc, setDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         // Import Authentication functions
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         // Import centralized Firebase configuration
         import { firebaseConfig } from "./js/firebase-config.js";
         // Import admin panel module
-        import { initializeAdminPanel, toggleAdminForm, populateAdminDropdowns, populateTeamDatalist, handleUpdateResults } from "./js/admin-panel.js";
+        import { initializeAdminPanel, toggleAdminForm, populateAdminDropdowns, populateTeamDatalist, handleUpdateResults, loadSeasonUI } from "./js/admin-panel.js";
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -236,7 +252,7 @@
         console.log("Current auth user:", auth.currentUser ? auth.currentUser.email : "Not signed in");
 
         // Initialize admin panel module with all Firestore functions
-        initializeAdminPanel(db, addDoc, collection, { getDocs, query, where, doc, updateDoc });
+        initializeAdminPanel(db, addDoc, collection, { getDocs, query, where, doc, updateDoc, getDoc, setDoc, arrayUnion });
 
         // DOM References for Auth
         const loginRegisterFormDiv = document.getElementById('login-register-form');
@@ -375,7 +391,8 @@
                 if (currentUserId === ADMIN_UID) {
                     console.log("Admin user detected, initializing admin panel...");
                     toggleAdminForm(true);
-                    // Populate admin dropdowns and datalist when admin signs in
+                    // Load season info and populate admin dropdowns
+                    await loadSeasonUI();
                     await initializeAdminDropdowns();
                 } else {
                     console.log("Non-admin user detected. Redirecting to index.html");
