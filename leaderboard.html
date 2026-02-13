@@ -36,6 +36,8 @@
     <div class="container py-4">
         <h1 class="text-center mb-5">Player Leaderboard & Game Results</h1>
 
+        <div id="season-selector-container" class="text-center mb-4" style="display: none;"></div>
+
         <div id="overall-leaderboard-container" class="game-results-card mb-5" style="display: none;">
             <h2 class="text-center mb-4">Overall Player Standings</h2>
             <div id="leaderboard-list">
@@ -67,10 +69,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { calculatePoints, calculatePlayerStats } from "./js/calculations.js";
         import { firebaseConfig } from "./js/firebase-config.js";
-        import { renderLeaderboardTable, createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers } from "./js/ui-helpers.js";
+        import { renderLeaderboardTable, createPlayerHistoryModal, openPlayerHistory, setupPlayerClickHandlers, fetchActiveSeason, createSeasonSelector } from "./js/ui-helpers.js";
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -83,6 +85,8 @@
 
         // Store user display names for modal
         let userDisplayNamesGlobal = {};
+        let selectedSeason = null;
+        let allSeasonsConfig = null;
 
         // Create player history modal on page load
         createPlayerHistoryModal();
@@ -97,24 +101,39 @@
             allGamesResultsContainer.innerHTML = '<p class="text-center text-muted">Loading game results and predictions...</p>';
 
             try {
-                // 1. Fetch all games
-                const gamesSnapshot = await getDocs(query(collection(db, 'games'), orderBy('KickOffTime', 'desc')));
+                // 1. Fetch all games (filtered by season)
+                let gamesQuery;
+                if (selectedSeason && selectedSeason !== '__none__') {
+                    gamesQuery = query(collection(db, 'games'), where('season', '==', selectedSeason));
+                } else {
+                    gamesQuery = query(collection(db, 'games'), orderBy('KickOffTime', 'desc'));
+                }
+                const gamesSnapshot = await getDocs(gamesQuery);
                 const games = [];
                 const gamesById = {};
                 
                 gamesSnapshot.forEach(doc => {
                     const gameData = { id: doc.id, ...doc.data() };
+                    // Client-side filter for "No Season"
+                    if (selectedSeason === '__none__' && gameData.season) return;
                     games.push(gameData);
                     gamesById[doc.id] = gameData;
                 });
 
-                // 2. Fetch all predictions
-                const predictionsSnapshot = await getDocs(query(collection(db, 'predictions'), orderBy('timestamp', 'desc')));
+                // 2. Fetch predictions for the filtered games (by gameId, not by season)
                 const predictions = [];
+                const gameIds = games.map(g => g.id);
                 
-                predictionsSnapshot.forEach(doc => {
-                    predictions.push(doc.data());
-                });
+                if (gameIds.length > 0) {
+                    // Firestore 'in' queries support max 10 items per batch
+                    for (let i = 0; i < gameIds.length; i += 10) {
+                        const batch = gameIds.slice(i, i + 10);
+                        const predSnapshot = await getDocs(query(collection(db, 'predictions'), where('gameId', 'in', batch)));
+                        predSnapshot.forEach(doc => {
+                            predictions.push(doc.data());
+                        });
+                    }
+                }
 
                 // 3. Use the centralized calculatePlayerStats function from calculations.js
                 const playerStats = calculatePlayerStats(games, predictions);
@@ -249,7 +268,22 @@
         }
 
         // Call the function when the page loads
-        document.addEventListener('DOMContentLoaded', loadAllResults);
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch season config
+            allSeasonsConfig = await fetchActiveSeason(db);
+            selectedSeason = allSeasonsConfig ? allSeasonsConfig.name : null;
+
+            // Show season dropdown when seasons exist
+            if (allSeasonsConfig && allSeasonsConfig.allSeasons && allSeasonsConfig.allSeasons.length >= 1) {
+                document.getElementById('season-selector-container').style.display = 'block';
+                createSeasonSelector('season-selector-container', allSeasonsConfig.allSeasons, selectedSeason, (season) => {
+                    selectedSeason = season;
+                    loadAllResults();
+                });
+            }
+
+            await loadAllResults();
+        });
     </script>
 </body>
 </html>
