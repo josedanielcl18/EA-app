@@ -151,7 +151,7 @@ function mapEventToFirestoreFormat(event) {
     return {
         HomeTeam: event.strHomeTeam || 'Unknown',
         AwayTeam: event.strAwayTeam || 'Unknown',
-        KickOffTime: formatDateToISO(event.dateEvent),
+        KickOffTime: formatDateToISO(event.strTimestamp || event.dateEvent),
         Status: 'upcoming',
         League: normalizeLeague(event.strLeague) || 'Other',
         thesportsdbEventId: event.idEvent,
@@ -208,7 +208,8 @@ export async function searchFixture(homeTeamName, awayTeamName) {
             .filter(event => {
                 if (eventIds.has(event.idEvent)) return false;
                 eventIds.add(event.idEvent);
-                return new Date(event.dateEvent) > now;
+                const eventDate = new Date(event.strTimestamp || event.dateEvent);
+                return eventDate > now;
             })
             .map(event => mapEventToFirestoreFormat(event))
             .sort((a, b) => new Date(a.KickOffTime) - new Date(b.KickOffTime))
