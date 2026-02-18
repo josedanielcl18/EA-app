@@ -11,6 +11,7 @@ const serviceAccount = require(SERVICE_ACCOUNT_KEY_PATH);
 
 // TheSportsDB API Configuration
 const THESPORTSDB_API_KEY = '123'; // Your free API key from TheSportsDB
+//const THESPORTSDB_API_KEY = '3'; // Your free API key from TheSportsDB
 const THESPORTSDB_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_API_KEY}`;
 
 // Firestore Collection Names
@@ -90,7 +91,7 @@ const teamsData = [
     // { id: "hellas_verona", name: "Hellas Verona", nationalLeagueId: "serie_a" },
     // { id: "inter_milan", name: "Inter Milan", nationalLeagueId: "serie_a" },
     // { id: "juventus", name: "Juventus", nationalLeagueId: "serie_a" },
-    { id: "lazio", name: "Lazio", nationalLeagueId: "serie_a" },
+    // { id: "lazio", name: "Lazio", nationalLeagueId: "serie_a" },
     // { id: "lecce", name: "Lecce", nationalLeagueId: "serie_a" },
     // { id: "ac_milan", name: "AC Milan", nationalLeagueId: "serie_a" },
     // { id: "monza", name: "Monza", nationalLeagueId: "serie_a" },
@@ -106,7 +107,7 @@ const teamsData = [
     // // --- Bundesliga Teams (Top 10 from 2023-2024 Season) ---
     // { id: "bayern_munich", name: "Bayern Munich", nationalLeagueId: "bundesliga" },
     // { id: "bayer_leverkusen", name: "Bayer Leverkusen", nationalLeagueId: "bundesliga" },
-    // { id: "vfb_stuttgart", name: "VfB Stuttgart", nationalLeagueId: "bundesliga" },
+    { id: "stuttgart", name: "Stuttgart", nationalLeagueId: "bundesliga" },
     // { id: "rb_leipzig", name: "RB Leipzig", nationalLeagueId: "bundesliga" },
     // { id: "borussia_dortmund", name: "Borussia Dortmund", nationalLeagueId: "bundesliga" },
     // { id: "eintracht_frankfurt", name: "Eintracht Frankfurt", nationalLeagueId: "bundesliga" },
@@ -124,20 +125,20 @@ const teamsData = [
     // { id: "olympique_lyonnais", name: "Olympique Lyonnais", nationalLeagueId: "ligue_1" },
     // { id: "rc_lens", name: "RC Lens", nationalLeagueId: "ligue_1" },
     // { id: "olympique_marseille", name: "Olympique Marseille", nationalLeagueId: "ligue_1" },
-    // { id: "stade_rennais", name: "Stade Rennais", nationalLeagueId: "ligue_1" },
-    // { id: "stade_reims", name: "Stade Reims", nationalLeagueId: "ligue_1" },
+    { id: "rennes", name: "Rennes", nationalLeagueId: "ligue_1" },
+    { id: "stade-de-reims", name: "Stade de Reims", nationalLeagueId: "ligue_1" },
 
-    // // --- International National Teams (Top ~30) ---
+    // // --- International National Teams (already uploaded) ---
     // { id: "argentina", name: "Argentina", nationalLeagueId: "international_teams" },
-    // { id: "bolivia", name: "Bolivia", nationalLeagueId: "international_teams" }, // Added
+    // { id: "bolivia", name: "Bolivia", nationalLeagueId: "international_teams" },
     // { id: "brazil", name: "Brazil", nationalLeagueId: "international_teams" },
-    // { id: "chile", name: "Chile", nationalLeagueId: "international_teams" }, // Added
+    // { id: "chile", name: "Chile", nationalLeagueId: "international_teams" },
     // { id: "colombia", name: "Colombia", nationalLeagueId: "international_teams" },
     // { id: "ecuador", name: "Ecuador", nationalLeagueId: "international_teams" },
-    // { id: "paraguay", name: "Paraguay", nationalLeagueId: "international_teams" }, // Added
-    // { id: "peru", name: "Peru", nationalLeagueId: "international_teams" }, // Added
+    // { id: "paraguay", name: "Paraguay", nationalLeagueId: "international_teams" },
+    // { id: "peru", name: "Peru", nationalLeagueId: "international_teams" },
     // { id: "uruguay", name: "Uruguay", nationalLeagueId: "international_teams" },
-    // { id: "venezuela", name: "Venezuela", nationalLeagueId: "international_teams" }, // Added
+    // { id: "venezuela", name: "Venezuela", nationalLeagueId: "international_teams" },
     // { id: "france", name: "France", nationalLeagueId: "international_teams" },
     // { id: "england", name: "England", nationalLeagueId: "international_teams" },
     // { id: "belgium", name: "Belgium", nationalLeagueId: "international_teams" },
@@ -163,6 +164,50 @@ const teamsData = [
     // { id: "saudi_arabia", name: "Saudi Arabia", nationalLeagueId: "international_teams" },
     // { id: "qatar", name: "Qatar", nationalLeagueId: "international_teams" },
     // { id: "australia", name: "Australia", nationalLeagueId: "international_teams" },
+
+    // --- 2026 World Cup: NEW qualified teams to upload ---
+    // { id: "iran", name: "Iran", nationalLeagueId: "international_teams" },
+    // { id: "uzbekistan", name: "Uzbekistan", nationalLeagueId: "international_teams" },
+    // { id: "jordan", name: "Jordan", nationalLeagueId: "international_teams" },
+    // { id: "new-zealand", name: "New Zealand", nationalLeagueId: "international_teams" },
+    // { id: "tunisia", name: "Tunisia", nationalLeagueId: "international_teams" },
+    // { id: "egypt", name: "Egypt", nationalLeagueId: "international_teams" },
+    // { id: "algeria", name: "Algeria", nationalLeagueId: "international_teams" },
+    // { id: "cape-verde", name: "Cape Verde", nationalLeagueId: "international_teams" },
+    // { id: "south-africa", name: "South Africa", nationalLeagueId: "international_teams" },
+    // { id: "ivory-coast", name: "Ivory Coast", nationalLeagueId: "international_teams" },
+    // { id: "panama", name: "Panama", nationalLeagueId: "international_teams" },
+    // { id: "haiti", name: "Haiti", nationalLeagueId: "international_teams" },
+    // { id: "curacao", name: "Curacao", nationalLeagueId: "international_teams" },
+    // { id: "scotland", name: "Scotland", nationalLeagueId: "international_teams" },
+    // { id: "norway", name: "Norway", nationalLeagueId: "international_teams" },
+    // { id: "austria", name: "Austria", nationalLeagueId: "international_teams" },
+
+    // --- 2026 World Cup: Playoff teams (UEFA second round + inter-confederation) ---
+    // UEFA playoffs
+    // { id: "italy", name: "Italy", nationalLeagueId: "international_teams" },
+    // { id: "denmark", name: "Denmark", nationalLeagueId: "international_teams" },
+    // { id: "poland", name: "Poland", nationalLeagueId: "international_teams" },
+    // { id: "wales", name: "Wales", nationalLeagueId: "international_teams" },
+    // { id: "bosnia-herzegovina", name: "Bosnia-Herzegovina", nationalLeagueId: "international_teams" },
+    // { id: "ukraine", name: "Ukraine", nationalLeagueId: "international_teams" },
+    // { id: "sweden", name: "Sweden", nationalLeagueId: "international_teams" },
+    // { id: "albania", name: "Albania", nationalLeagueId: "international_teams" },
+    // { id: "slovakia", name: "Slovakia", nationalLeagueId: "international_teams" },
+    // { id: "kosovo", name: "Kosovo", nationalLeagueId: "international_teams" },
+    // { id: "turkey", name: "Turkey", nationalLeagueId: "international_teams" },
+    // { id: "romania", name: "Romania", nationalLeagueId: "international_teams" },
+    // { id: "czech-republic", name: "Czech Republic", nationalLeagueId: "international_teams" },
+    // { id: "ireland", name: "Ireland", nationalLeagueId: "international_teams" },
+    // { id: "north-macedonia", name: "North Macedonia", nationalLeagueId: "international_teams" },
+    // { id: "n.ireland", name: "N.Ireland", nationalLeagueId: "international_teams" },
+    // Inter-confederation playoffs
+    // { id: "dr-congo", name: "DR Congo", nationalLeagueId: "international_teams" },
+    // { id: "new-caledonia", name: "New Caledonia", nationalLeagueId: "international_teams" },
+    // { id: "jamaica", name: "Jamaica", nationalLeagueId: "international_teams" },
+    // { id: "iraq", name: "Iraq", nationalLeagueId: "international_teams" },
+    // { id: "bolivia", name: "Bolivia", nationalLeagueId: "international_teams" },
+    // { id: "suriname", name: "Suriname", nationalLeagueId: "international_teams" },
 
     // // --- Other European Clubs ---
     // { id: "benfica", name: "Benfica", nationalLeagueId: "other_european_clubs" },
@@ -197,8 +242,10 @@ const teamsData = [
     // { id: "estudiantes-de-la-plata", name: "Estudiantes de La Plata", nationalLeagueId: "other_european_clubs" },
     // { id: "lanús", name: "Lanús", nationalLeagueId: "other_european_clubs" },
     // { id: "vélez-sarsfield", name: "Vélez Sarsfield", nationalLeagueId: "other_european_clubs" },
-    // { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" }
-    
+    // { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" },
+    // { id: "galatasaray", name: "Galatasaray", nationalLeagueId: "other_european_clubs" },
+    // { id: "bodøglimt", name: "Bodø/Glimt", nationalLeagueId: "other_european_clubs" },
+    // { id: "club-brugge", name: "Club Brugge", nationalLeagueId: "other_european_clubs" } 
 ];
 
 // --- Initialize Firebase Admin SDK ---

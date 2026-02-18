@@ -90,7 +90,7 @@ const teamsData = [
     // { id: "hellas_verona", name: "Hellas Verona", nationalLeagueId: "serie_a" },
     // { id: "inter_milan", name: "Inter Milan", nationalLeagueId: "serie_a" },
     // { id: "juventus", name: "Juventus", nationalLeagueId: "serie_a" },
-    { id: "lazio", name: "Lazio", nationalLeagueId: "serie_a" },
+    //{ id: "lazio", name: "Lazio", nationalLeagueId: "serie_a" },
     // { id: "lecce", name: "Lecce", nationalLeagueId: "serie_a" },
     // { id: "ac_milan", name: "AC Milan", nationalLeagueId: "serie_a" },
     // { id: "monza", name: "Monza", nationalLeagueId: "serie_a" },
@@ -197,8 +197,10 @@ const teamsData = [
     // { id: "estudiantes-de-la-plata", name: "Estudiantes de La Plata", nationalLeagueId: "other_european_clubs" },
     // { id: "lanús", name: "Lanús", nationalLeagueId: "other_european_clubs" },
     // { id: "vélez-sarsfield", name: "Vélez Sarsfield", nationalLeagueId: "other_european_clubs" },
-    // { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" }
-    
+    // { id: "racing-club", name: "Racing Club", nationalLeagueId: "other_european_clubs" },
+    { id: "galatasaray", name: "Galatasaray", nationalLeagueId: "other_european_clubs" },
+    { id: "bodøglimt", name: "Bodø/Glimt", nationalLeagueId: "other_european_clubs" },
+    { id: "club-brugge", name: "Club Brugge", nationalLeagueId: "other_european_clubs" } 
 ];
 
 // --- Initialize Firebase Admin SDK ---

@@ -194,8 +194,20 @@ export async function handleAdminGameAdd() {
     }
 
     try {
-        const kickOffTime = new Date(kickOffTimeStr);
-        if (isNaN(kickOffTime.getTime())) {
+        // Parse datetime-local as local time and construct UTC ISO string (no timezone shift)
+        // kickOffTimeStr is in format 'YYYY-MM-DDTHH:mm'
+        function localDateTimeToUTCISOString(dtStr) {
+            if (!dtStr) return null;
+            const [datePart, timePart] = dtStr.split('T');
+            if (!datePart || !timePart) return null;
+            const [year, month, day] = datePart.split('-').map(Number);
+            const [hour, minute] = timePart.split(':').map(Number);
+            // Create a Date as if the input is local, then get UTC ISO string for that wall time
+            const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
+            return utcDate.toISOString();
+        }
+        const kickOffTimeISO = localDateTimeToUTCISOString(kickOffTimeStr);
+        if (!kickOffTimeISO) {
             gameMessageDiv.textContent = 'Invalid Kick-off Time.';
             gameMessageDiv.style.color = 'red';
             addGameButton.disabled = false;
@@ -212,7 +224,7 @@ export async function handleAdminGameAdd() {
         const gameData = {
             HomeTeam: homeTeam,
             AwayTeam: awayTeam,
-            KickOffTime: kickOffTime.toISOString(),
+            KickOffTime: kickOffTimeISO,
             League: league,
             Status: status,
             Fecha: fecha,
@@ -328,10 +340,26 @@ export function selectFixture(fixture) {
     adminAwayTeamInput.value = fixture.AwayTeam;
     adminLeagueSelect.value = fixture.League;
     
-    // Convert ISO string to datetime-local format
-    const date = new Date(fixture.KickOffTime);
-    const localDateTime = date.toISOString().slice(0, 16);
-    adminKickOffTimeInput.value = localDateTime;
+    // Set hidden/disabled input for form submission, but show kickoff time as plain text
+    if (fixture.KickOffTime && typeof fixture.KickOffTime === 'string' && fixture.KickOffTime.length >= 16) {
+        adminKickOffTimeInput.value = fixture.KickOffTime.slice(0, 16);
+        const kickoffTimeDisplay = document.getElementById('kickoffTimeDisplay');
+        if (kickoffTimeDisplay) {
+            const utc = fixture.KickOffTime.replace('T', ' ').replace(':00.000Z', ':00 UTC');
+            const local = new Date(fixture.KickOffTime).toLocaleString();
+            kickoffTimeDisplay.innerHTML = `<span style='color:#0dcaf0'>UTC: ${utc}</span><br><span style='color:#198754'>Local: ${local}</span>`;
+        }
+    } else {
+        // fallback: use local time logic if missing or malformed
+        const date = new Date(fixture.KickOffTime);
+        const pad = n => n.toString().padStart(2, '0');
+        const localDateTime = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        adminKickOffTimeInput.value = localDateTime;
+        const kickoffTimeDisplay = document.getElementById('kickoffTimeDisplay');
+        if (kickoffTimeDisplay) {
+            kickoffTimeDisplay.innerHTML = `<span style='color:#198754'>Local: ${date.toLocaleString()}</span>`;
+        }
+    }
     
     adminThesportsdbEventId.value = fixture.thesportsdbEventId;
     

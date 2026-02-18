@@ -130,14 +130,33 @@ function normalizeLeague(strLeague) {
  */
 function formatDateToISO(dateString) {
     if (!dateString) return null;
-    
     try {
-        const date = new Date(dateString);
-        return date.toISOString();
-    } catch (error) {
-        console.error('[formatDateToISO] Error parsing date:', error);
+        // Ensure format is YYYY-MM-DDTHH:MM:SSZ
+        let normalized = dateString.trim().replace(" ", "T");
+        // If it's just a date (e.g. "2026-02-17"), add a default time
+        if (normalized.length === 10) normalized += "T00:00:00";
+        // Always force UTC interpretation
+        if (!normalized.endsWith('Z')) normalized += "Z";
+        return new Date(normalized).toISOString();
+    } catch (e) {
+        console.error('[formatDateToISO] Error:', e);
         return null;
     }
+}
+
+// Utility: Convert ISO string to Firestore Timestamp if available
+function toFirestoreTimestamp(isoString) {
+    // If running in Node.js with firebase-admin, use native Timestamp
+    try {
+        const admin = require('firebase-admin');
+        if (admin.firestore && admin.firestore.Timestamp) {
+            return admin.firestore.Timestamp.fromDate(new Date(isoString));
+        }
+    } catch (e) {
+        // Not running in Node.js or firebase-admin not available
+    }
+    // Fallback: return ISO string (for browser/client)
+    return isoString;
 }
 
 /**
@@ -148,10 +167,11 @@ function formatDateToISO(dateString) {
  * @returns {object} Game object formatted for Firestore
  */
 function mapEventToFirestoreFormat(event) {
+    const isoKickoff = formatDateToISO(event.strTimestamp || event.dateEvent);
     return {
         HomeTeam: event.strHomeTeam || 'Unknown',
         AwayTeam: event.strAwayTeam || 'Unknown',
-        KickOffTime: formatDateToISO(event.strTimestamp || event.dateEvent),
+        KickOffTime: toFirestoreTimestamp(isoKickoff),
         Status: 'upcoming',
         League: normalizeLeague(event.strLeague) || 'Other',
         thesportsdbEventId: event.idEvent,
@@ -175,46 +195,39 @@ export async function searchFixture(homeTeamName, awayTeamName) {
         console.error('[searchFixture] Both team names are required');
         return [];
     }
-
     try {
         const allEvents = [];
         const searchOrders = [
             `${homeTeamName}_vs_${awayTeamName}`,
             `${awayTeamName}_vs_${homeTeamName}`
         ];
-        
         for (const eventSearch of searchOrders) {
             await enforceRateLimit();
-            
             const url = `${THESPORTSDB_BASE_URL}/searchevents.php?e=${encodeURIComponent(eventSearch)}`;
             const response = await fetch(url);
-            
             if (!response.ok) continue;
-            
             const data = await response.json();
             if (data.event && Array.isArray(data.event)) {
                 allEvents.push(...data.event);
             }
         }
-        
         if (allEvents.length === 0) {
             return [];
         }
-        
         const now = new Date();
         const eventIds = new Set();
-        
         const fixtures = allEvents
             .filter(event => {
                 if (eventIds.has(event.idEvent)) return false;
                 eventIds.add(event.idEvent);
-                const eventDate = new Date(event.strTimestamp || event.dateEvent);
+                // FIX: Use formatter for UTC-correct comparison
+                const isoString = formatDateToISO(event.strTimestamp || event.dateEvent);
+                const eventDate = new Date(isoString);
                 return eventDate > now;
             })
             .map(event => mapEventToFirestoreFormat(event))
             .sort((a, b) => new Date(a.KickOffTime) - new Date(b.KickOffTime))
             .slice(0, 5);
-        
         return fixtures;
     } catch (error) {
         console.error('[searchFixture] Error:', error.message);
